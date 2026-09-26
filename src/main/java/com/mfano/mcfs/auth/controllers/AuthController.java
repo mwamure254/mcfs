@@ -22,9 +22,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.mfano.mcfs.config.CustomUserDetails;
 import com.mfano.mcfs.dtos.UserDto;
 import com.mfano.mcfs.auth.models.User;
+import com.mfano.mcfs.auth.models.Profile;
 import com.mfano.mcfs.auth.services.AuditService;
 import com.mfano.mcfs.auth.services.RoleService;
 import com.mfano.mcfs.auth.services.UserService;
+import com.mfano.mcfs.auth.services.ProfileService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
     private final UserService userService;
     private final RoleService roleService;
+    private final ProfileService profileService;
 
     private final PasswordEncoder passwordEncoder;
     private String msg = "security/message";
@@ -43,6 +46,9 @@ public class AuthController {
     // guest user
     @GetMapping("/")
     public String redirectAfterLogin(@AuthenticationPrincipal CustomUserDetails auth, RedirectAttributes model) {
+        if (auth == null) {
+            return "redirect:/login";
+        }
 
         // Extract roles
         Set<String> roles = auth.getAuthorities()
@@ -60,26 +66,45 @@ public class AuthController {
         }
         //model.addFlashAttribute("profile", profileService.checkProfile(auth.getId()));
         auditService.record(
-                "user_login",
+                "USER_LOGIN",
                 "User " + auth.getUsername() + " logged in successfully.");
 
         // Redirect based on role priority
         if (roles.contains("ROLE_ADMIN"))
         {
             return "redirect:/admin/dashboard";
-        } else if (roles.contains("ROLE_MANAGER")) {
-            return "redirect:/manager/dashboard";
-        } else if (roles.contains("ROLE_CASHIER")) {
-            return "redirect:/cashier/dashboard";
-        } else if (roles.contains("ROLE_PROCUREMENT")) {
+
+        } else if (roles.contains("ROLE_CEO")) {
+            return "redirect:/executive/dashboard";
+
+        } else if (roles.contains("ROLE_BDM")) {
+            return "redirect:/executive/dashboard";
+
+        }else if (roles.contains("ROLE_HRO")) {
+            return "redirect:/hr/dashboard";
+
+        } else if (roles.contains("ROLE_ICT")) {
+            return "redirect:/ict/dashboard";
+
+        } else if (roles.contains("ROLE_PMO")) {
             return "redirect:/procurement/dashboard";
-        } else if (roles.contains("ROLE_USER")) {
-            return "redirect:/guest/dashboard";
+
+        } else if (roles.contains("ROLE_ACO")) {
+            return "redirect:/accounts/dashboard";
+
+        } else if (roles.contains("ROLE_RMO")) {
+            return "redirect:/records/dashboard";
+
         }else {
             model.addFlashAttribute("error", "Please contact the system admin for role mapping.");
             return login;
         }
 
+    }
+
+    @GetMapping("/error/403")
+    public String forbidden() {
+        return "error/403";
     }
 
     @GetMapping("/register")
@@ -100,7 +125,7 @@ public class AuthController {
         // If user is already logged in → redirect to dashboard
         if (authentication != null && authentication.isAuthenticated()
                 && authentication instanceof CustomUserDetails) {
-            return "redirect:/forward";
+            return "redirect:/";
         }
 
         // Logout confirmation
@@ -118,11 +143,51 @@ public class AuthController {
             model.addAttribute("error", "User not authenticated, login to proceed.");
             return login;
         }
-        //model.addAttribute("profile", profileService.checkProfile(auth.getId()));
+        model.addAttribute("profile", profileService.checkProfile(auth.getId()));
         // Add user info to model (for Thymeleaf dashboard pages)
         model.addAttribute("user", userService.findById(auth.getId()));
 
         return "security/profile";
+    }
+
+    // profile/update @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/profile/update")
+    public String userProfileUpdate(@AuthenticationPrincipal CustomUserDetails auth,
+            @ModelAttribute("profile") Profile profile) {
+
+        profileService.update(auth.getId(), profile);
+        auditService.record("update_profile", "user id=" + auth.getId() + "Updated their profile");
+        return "redirect:/profile";
+    }
+
+    // update user image
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/image/update/{userid}")
+    public String imageUpdate(@PathVariable Long userid, @RequestParam("image") MultipartFile file,
+            RedirectAttributes red) {
+        try {
+            profileService.updateProfileImage(userid, file, red);
+        } catch (IOException e) {
+            red.addFlashAttribute("error", e.getMessage());
+        }
+        auditService.record("update_image", "user id=" + userid + "Updated their profile image");
+        red.addFlashAttribute("message", "Image updated successfully.");
+        return "redirect:/profile";
+    }
+
+    // delete user image
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/image/delete/{userid}")
+    public String imageDelete(@PathVariable Long userid, RedirectAttributes red) {
+        try {
+            profileService.deleteProfileImage(userid, red);
+        } catch (IOException e) {
+            red.addFlashAttribute("error", e.getMessage());
+        }
+        auditService.record("delete_image", "user id=" + userid + "Deleted their profile image");
+        red.addFlashAttribute("message", "Image deleted successfully.");
+        return "redirect:/profile";
     }
 
     @GetMapping("/logout")
@@ -171,10 +236,10 @@ public class AuthController {
     // Forgot/reset endpoints
     @GetMapping("/forgot")
     public String forgotForm() {
-        return "security/forgot";
+        return "security/forgot-password";
     }
 
-    @PostMapping("/forgot")
+    @PostMapping("/forget")
     public String forgotSubmit(@RequestParam String email, RedirectAttributes model) {
         if (userService.findByEmail(email) == null) {
             model.addFlashAttribute("error", "No account matches the email address.");

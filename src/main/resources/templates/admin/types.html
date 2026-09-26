@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+
+    <meta name="description" content="MCFS Admin - Manage Document Types">
+    <meta name="author" content="Mfano">
+
+    <title>MCFS | Document Types</title>
+
+</th:block>
+
+<body id="page-top">
+
+    <div id="wrapper">
+
+        <!-- ================= SIDEBAR ================= -->
+        <th:block th:insert="~{partials/_sidebar}" />
+        <!-- ================ END SIDEBAR ============== -->
+
+        <!-- ================= CONTENT ================= -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <div id="content">
+
+                <!-- ================= TOPBAR ================= -->
+                <th:block th:insert="~{partials/_topbar}" />
+                <!-- ================ END TOPBAR ============== -->
+
+                <!-- ================= PAGE CONTENT ================= -->
+                <div class="container-fluid px-4 py-4" style="width: 80%">
+
+                    <!-- ================= PAGE HEADER ================= -->
+                    <div class="d-flex flex-column flex-md-row
+                                justify-content-between align-items-md-center mb-4">
+
+                        <div>
+                            <h1 class="h3 mb-1 text-gray-800">
+                                <i class="fas fa-tags mr-2"></i>
+                                Document Types
+                            </h1>
+
+                            <p class="text-muted mb-0">
+                                Manage document types and classification mapping
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn btn-primary mt-3 mt-md-0" data-toggle="modal"
+                            data-target="#addTypeModal">
+
+                            <i class="fas fa-plus-circle mr-1"></i>
+                            Add Type
+                        </button>
+
+                    </div>
+                    <!-- ================ END PAGE HEADER ================ -->
+
+                    <!-- ================= TYPES CARD ================= -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <!-- CARD HEADER -->
+                        <div class="card-header bg-white py-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-6 mb-2 mb-md-0">
+
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-tags mr-1"></i>
+                                        Document Types
+                                    </h6>
+                                </div>
+
+                                <!-- SEARCH -->
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fas fa-search text-muted"></i>
+                                            </span>
+                                        </div>
+
+                                        <input type="text" id="typeSearch" class="form-control"
+                                            placeholder="Search document types..." aria-label="Search document types">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ================ END CARD HEADER ================ -->
+
+                        <!-- CARD BODY -->
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+
+                                <table class="table table-hover table-striped mb-0" id="typeTable">
+
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th class="text-center" style="width: 60px;">
+                                                #
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-tag mr-1"></i>
+                                                Type Name
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-align-left mr-1"></i>
+                                                Description
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-user-edit mr-1"></i>
+                                                Created By
+                                            </th>
+                                            <th class="text-center">
+                                                <i class="fas fa-toggle-on mr-1"></i>
+                                                Status
+                                            </th>
+                                            <th class="text-center" style="width: 150px;">
+                                                <i class="fas fa-cogs mr-1"></i>
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <!-- ================= TYPE ROW ================= -->
+                                        <tr th:each="dote, stat : ${types}">
+                                            <!-- NUMBER -->
+                                            <td class="text-center font-weight-bold" th:text="${stat.count}">
+                                                1
+                                            </td>
+
+                                            <!-- TYPE NAME -->
+                                            <td>
+                                                <span class="font-weight-bold text-gray-800" th:text="${dote.name}">
+                                                    CONFIDENTIAL
+                                                </span>
+                                            </td>
+
+                                            <!-- DESCRIPTION -->
+                                            <td>
+                                                <span th:if="${dote.description != null
+                                                        and !dote.description.isEmpty()}" class="text-muted"
+                                                    th:text="${dote.description}">
+                                                    Document type description
+                                                </span>
+
+                                                <span th:unless="${dote.description != null
+                                                        and !dote.description.isEmpty()}"
+                                                    class="text-muted font-italic">
+                                                    No description
+                                                </span>
+                                            </td>
+
+                                            <!-- CREATED BY -->
+                                            <td>
+                                                <span th:if="${dote.createdBy != null}" th:text="${dote.createdBy}">
+                                                    Admin
+                                                </span>
+                                                <span th:unless="${dote.createdBy != null}" class="text-muted">
+                                                    System
+                                                </span>
+                                            </td>
+
+                                            <!-- STATUS -->
+                                            <td class="text-center">
+                                                <span th:if="${dote.active}" class="badge badge-success px-2 py-1">
+
+                                                    <i class="fas fa-check-circle mr-1"></i>
+                                                    Active
+                                                </span>
+
+                                                <span th:unless="${dote.active}" class="badge badge-danger px-2 py-1">
+
+                                                    <i class="fas fa-times-circle mr-1"></i>
+                                                    Inactive
+                                                </span>
+                                            </td>
+
+                                            <!-- ACTIONS -->
+                                            <td class="text-center">
+                                                <div class="btn-group" role="group" aria-label="Type actions">
+
+                                                    <!-- EDIT -->
+                                                    <a class="btn btn-sm btn-outline-primary"
+                                                        th:href="@{/admin/manage/type/{id}(id=${dote.id})}" title="Edit type">
+
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+
+                                                    <!-- TOGGLE -->
+                                                    <form th:action="@{/admin/types/toggle/{id}(id=${dote.id})}"
+                                                        method="post" class="d-inline">
+
+                                                        <button type="submit" class="btn btn-sm btn-outline-warning"
+                                                            th:title="${dote.active
+                                                                    ? 'Deactivate'
+                                                                    : 'Activate'}">
+
+                                                            <i th:class="${dote.active
+                                                                ? 'fas fa-toggle-on'
+                                                                : 'fas fa-toggle-off'}">
+                                                            </i>
+                                                        </button>
+                                                    </form>
+
+                                                    <!-- DELETE -->
+                                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                                        data-toggle="modal"
+                                                        th:data-target="'#deleteTypeModal' + ${dote.id}"
+                                                        title="Delete type">
+
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </div>
+
+                                                <!-- ================= DELETE MODAL ================= -->
+                                                <div class="modal fade" th:id="'deleteTypeModal' + ${dote.id}"
+                                                    tabindex="-1" role="dialog" aria-hidden="true">
+
+                                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                                        <div class="modal-content">
+                                                            <!-- MODAL HEADER -->
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title text-danger">
+                                                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                                                    Delete Document Type
+                                                                </h5>
+
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+
+                                                                    <span aria-hidden="true">
+                                                                        &times;
+                                                                    </span>
+                                                                </button>
+                                                            </div>
+
+                                                            <!-- MODAL BODY -->
+                                                            <div class="modal-body text-left">
+                                                                <p class="mb-2">
+                                                                    Are you sure you want to delete
+                                                                    <strong th:text="${dote.name}">
+                                                                        Type
+                                                                    </strong>?
+                                                                </p>
+
+                                                                <div class="alert alert-warning mb-0">
+                                                                    <i class="fas fa-exclamation-circle mr-1"></i>
+                                                                    This action cannot be undone.
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- MODAL FOOTER -->
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">
+
+                                                                    <i class="fas fa-times mr-1"></i>
+                                                                    Cancel
+                                                                </button>
+
+                                                                <form
+                                                                    th:action="@{/admin/types/delete/{id}(id=${dote.id})}"
+                                                                    method="post">
+
+                                                                    <button type="submit" class="btn btn-danger">
+
+                                                                        <i class="fas fa-trash-alt mr-1"></i>
+                                                                        Delete
+
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- ============== END DELETE MODAL ============== -->
+
+                                            </td>
+                                        </tr>
+
+                                        <!-- ================= EMPTY STATE ================= -->
+                                        <tr th:if="${#lists.isEmpty(types)}">
+
+                                            <td colspan="6" class="text-center py-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-tags fa-3x mb-3"></i>
+                                                    <h5 class="font-weight-bold">
+                                                        No Document Types Found
+                                                    </h5>
+                                                    <p class="mb-3">
+                                                        There are currently no document types configured.
+                                                    </p>
+
+                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                        data-toggle="modal" data-target="#addTypeModal">
+
+                                                        <i class="fas fa-plus mr-1"></i>
+                                                        Add First Type
+
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- ================ END CARD BODY ================ -->
+
+                        <!-- CARD FOOTER -->
+                        <div class="card-footer bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <small class="text-muted">
+                                    <i class="fas fa-list mr-1"></i>
+                                    Total Records:
+
+                                    <strong th:text="${types != null ? types.size() : 0}">
+                                        0
+                                    </strong>
+                                </small>
+                            </div>
+                        </div>
+                        <!-- ================ END CARD FOOTER ================ -->
+
+                    </div>
+                    <!-- ================ END TYPES CARD ================ -->
+
+                </div>
+                <!-- ================ END PAGE CONTENT ================ -->
+
+            </div>
+
+            <!-- ================= FOOTER ================= -->
+            <th:block th:insert="~{partials/_footer}" />
+            <!-- ================ END FOOTER ================ -->
+        </div>
+    </div>
+
+    <!-- ================= ADD TYPE MODAL ================= -->
+    <div class="modal fade" id="addTypeModal" tabindex="-1" role="dialog" aria-labelledby="addTypeModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+
+            <div class="modal-content">
+                <form th:action="@{/admin/types/save}" method="post">
+
+                    <!-- MODAL HEADER -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addTypeModalLabel">
+
+                            <i class="fas fa-plus-circle mr-2"></i>
+                            Add Document Type
+                        </h5>
+
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+
+                            <span aria-hidden="true">
+                                &times;
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- MODAL BODY -->
+                    <div class="modal-body">
+                        <h6 class="font-weight-bold text-primary mb-3">
+
+                            <i class="fas fa-tag mr-1"></i>
+                            Type Information
+
+                        </h6>
+
+                        <!-- TYPE NAME -->
+                        <div class="form-group">
+                            <label for="typeName">
+                                Type Name
+                            </label>
+
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-tag"></i>
+                                    </span>
+
+                                </div>
+
+                                <input type="text" name="name" id="typeName" class="form-control"
+                                    placeholder="e.g. CONFIDENTIAL" maxlength="50" required>
+
+                            </div>
+                            <small class="form-text text-muted">
+                                Enter a unique document type name.
+                            </small>
+                        </div>
+
+                        <!-- DESCRIPTION -->
+                        <div class="form-group mb-0">
+                            <label for="typeDescription">
+                                Description
+                            </label>
+
+                            <textarea name="description" id="typeDescription" class="form-control"
+                                placeholder="Enter type description" rows="4" maxlength="200"></textarea>
+
+                            <small class="form-text text-muted">
+                                Maximum 200 characters.
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- MODAL FOOTER -->
+                    <div class="modal-footer">
+                        <button type="reset" class="btn btn-light">
+
+                            <i class="fas fa-eraser mr-1"></i>
+                            Clear
+                        </button>
+
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+
+                            <i class="fas fa-times mr-1"></i>
+                            Cancel
+                        </button>
+
+                        <button type="submit" class="btn btn-primary">
+
+                            <i class="fas fa-save mr-1"></i>
+                            Save Type
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- ================ END ADD TYPE MODAL ================ -->
+
+    <!-- ================= SCRIPTS ================= -->
+    <th:block th:insert="~{partials/_scripts}" />
+    <!-- ================ END SCRIPTS ================ -->
+
+    <!-- ================= TABLE SEARCH ================= -->
+    <script>
+        $(document).ready(function () {
+
+            $("#typeSearch").on("keyup", function () {
+                const value = $(this).val().toLowerCase();
+                $("#typeTable tbody tr").filter(function () {
+
+                    $(this).toggle(
+                        $(this).text().toLowerCase().indexOf(value) > -1
+                    );
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

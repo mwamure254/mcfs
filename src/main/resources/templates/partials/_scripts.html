@@ -4,27 +4,50 @@
 </a>
 
 <!-- Logout Modal-->
-<div class="modal fade" id="logoutModal" tabindex="-1">
-    <div class="modal-dialog modal-sm">
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
-            <div class="modal-body my-2 text-center">
-                <h1><a href="#"><i class="bi bi-info-circle text-danger"></i></a></h1>
-                <h5 class="text-center">
-                    Confirm to Logout
-                </h5>
-                <div class="row my-2 justify-content-center">
-                    <button class="btn col-sm-4 btn-warning mx-2" data-bs-dismiss="modal">Cancel</button>
-
-                    <form class="col-sm-4 btn-success mx-2" th:action="@{/logout}" method="post">
-                        <button class="btn btn-success" type="submit">Proceed</button>
-                    </form>
-                </div>
+            <div class="modal-body">
+                <p>Logout to end your current session.</p>
             </div>
-
+            <div class="modal-footer">
+                 <button class="btn btn-sm btn-warning" data-dismiss="modal" aria-label="Close">
+                    Cancel
+                </button>
+                <a class="btn btn-sm btn-primary" th:href="@{/logout}">Logout</a>
+            </div>
         </div>
     </div>
-</div><!-- End Logout Modal-->
+</div>
 
+<!-- Floating Alerts -->
+<div th:if="${message}" id="floatingAlertSuccess"
+    class="alert alert-success alert-dismissible fade show position-fixed shadow"
+    role="alert"
+    style="z-index: 1080; min-width: 300px; top: 20px; right: 20px;">
+
+    <i class="fas fa-check-circle mr-2"></i>
+    <strong th:text="${message}">Success!</strong>
+
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div th:if="${error}" id="floatingAlertError"
+    class="alert alert-danger alert-dismissible fade show position-fixed shadow"
+    role="alert"
+    style="z-index: 1080; min-width: 300px; top: 20px; right: 20px;">
+
+    <i class="fas fa-exclamation-triangle mr-2"></i>
+    <strong th:text="${error}">Error!</strong>
+
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<!-- End Floating Alerts-->
 
 <!-- Bootstrap core JavaScript-->
 <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
@@ -35,6 +58,7 @@
 
 <!-- Custom scripts for all pages-->
 <script th:src="@{/js/sb-admin-2.min.js}"></script>
+<script th:src="@{/js/custom.js}"></script>
 
 <!-- Page level plugins -->
 <script th:src="@{/vendor/chart.js/Chart.min.js}"></script>

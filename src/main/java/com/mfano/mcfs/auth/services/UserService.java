@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +41,7 @@ public class UserService {
 
     @Transactional
     public void registerUser(UserDto userDto) {
-        if (userRepository.findByEmail(userDto.getEmail()) != null) {
+        if (findByEmail(userDto.getEmail()) != null) {
             throw new RuntimeException("Email already in use");
         }
         if (userDto.getRole() == null) {
@@ -53,16 +54,19 @@ public class UserService {
         User user = new User();
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setEnabled(true);
         user.setFin(userDto.getFin());
         user.setLan(userDto.getLan());             
         user.setGender(userDto.getGender());  
 
         user.setBranch(branchService.findById(userDto.getBranch()));
-        user.setRoles(Set.of(roleService.findById(userDto.getRole())));
-        save(user);
-        // createAndSendToken(user);
+        // Role
+        Role role = roleService.findById(userDto.getRole());
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        user.setRoles(roles);
 
+        save(user);
+        createAndSendToken(user);
     }
 
     public User save(User user) {
@@ -77,10 +81,7 @@ public class UserService {
         existing.setGender(userDto.getGender());  
 
         existing.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        existing.setEnabled(true);
         existing.setBranch(branchService.findById(userDto.getBranch()));
-        //existing.setRoles(Set.of(roleService.findById(userDto.getRole())));
-        existing.getRoles().add(roleService.findById(userDto.getRole()));
         save(existing);
     }
 
@@ -100,7 +101,7 @@ public class UserService {
     }
 
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     public User findByBranch_Id(Long storeId) {
@@ -140,7 +141,7 @@ public class UserService {
 
     // Password reset flow
     public void createPasswordResetToken(String email) {
-        User user = userRepository.findByEmail(email);
+        User user = findByEmail(email);
         if (user == null) {
             throw new RuntimeException("No user with the email provided");
         }
@@ -184,7 +185,14 @@ public class UserService {
     public List<User> findAll() {
         return userRepository.findAll();
     }
-
+    
+    //To Do
+    public void assignRoleToUser(Long userId, Long roleId) {
+        User user = findById(userId);
+        Role role = roleService.findById(roleId);
+        user.getRoles().add(role);
+        save(user);
+    }
     //To Do
      public void removeRoleFromUser(Long userId, Long roleId) {
         User user = findById(userId);

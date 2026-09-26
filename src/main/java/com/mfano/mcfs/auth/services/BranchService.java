@@ -50,6 +50,6 @@ public class BranchService {
     }
 
     public Branch findByName(String name) {
-        return branchRepository.findByName(name);
+        return branchRepository.findByName(name).orElse(null);
     }
 }

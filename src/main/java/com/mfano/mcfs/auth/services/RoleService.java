@@ -36,6 +36,21 @@ public class RoleService {
         roleRepository.save(role);
     }
 
+    public void update(Long id, Role role){
+        Role existing = findById(id);
+
+        existing.setName(role.getName());
+        existing.setDescription(role.getDescription());        
+
+        save(existing);
+    }
+
+    public void toggleActive(Long id) {
+        Role existing = findById(id);
+        existing.setActive(!Boolean.TRUE.equals(existing.isActive()));
+        save(existing);
+    }
+
     public List<Role> getUserNotRoles(User user) {
         return roleRepository.getUserNotRoles(user.getId());
     }

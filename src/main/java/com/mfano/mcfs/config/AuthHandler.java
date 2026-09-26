@@ -44,8 +44,9 @@ public class AuthHandler implements AuthenticationSuccessHandler,
                 authentication.getPrincipal() instanceof CustomUserDetails user) {
             response.sendRedirect("/");
             return;
+        }else{
+            response.sendRedirect("/login");
         }
-        response.sendRedirect("/login");
     }
 
     @Override
@@ -87,7 +88,7 @@ public class AuthHandler implements AuthenticationSuccessHandler,
                 authentication.getPrincipal() instanceof CustomUserDetails user) {
 
             auditService.record(
-                    "user_logout",
+                    "USER_LOGOUT",
                     "User " + user.getUsername() + " logged out");
         }
     }

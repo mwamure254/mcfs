@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+    <!-- Custom meta data for this template-->
+    <meta name="description" content="mcfs blank page">
+    <meta name="author" content="mfano">
+
+    <!-- Custom title for this page-->
+    <title>MCFS | Blank</title>
+
+    <!-- Custom styles for this page-->
+</th:block>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- ======= Sidebar ======= -->
+        <th:block th:insert="~{partials/_sidebar}" />
+        <!-- =====End Sidebar=====-->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- ======= Topbar ======= -->
+                <th:block th:insert="~{partials/_topbar}" />
+                <!-- =====End Topbar=====-->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-4 text-gray-800">Blank Page</h1>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+              <!-- ======= footer ======= -->
+            <th:block th:insert="~{partials/_footer}" />
+            <!-- =====End footer=====-->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- ======= scripts ======= -->
+    <th:block th:insert="~{partials/_scripts}" />
+    <!-- =====End scripts=====-->
+</body>
+
+</html>

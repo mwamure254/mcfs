@@ -3,9 +3,10 @@
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
         <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-laugh-wink"></i>
+            <img th:src="@{/images/mfano.png}" alt="logo" class="me-2"
+                style="width: auto; height: 38px; object-fit: contain;">
         </div>
-        <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+        <div class="sidebar-brand-text mx-3">Mfano DS</div>
     </a>
 
     <!-- Divider -->
@@ -21,86 +22,176 @@
     <!-- Divider -->
     <hr class="sidebar-divider">
 
-    <!-- Heading -->
-    <div class="sidebar-heading">
-        Interface
-    </div>
-
-    <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
+    <!-- Nav Item - Security Collapse Menu -->
+    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'CEO')">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsers" aria-expanded="true"
             aria-controls="collapseTwo">
             <i class="fas fa-fw fa-cog"></i>
-            <span>Components</span>
+            <span>Security</span>
         </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="collapseUsers" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Custom Components:</h6>
-                <a class="collapse-item" href="buttons.html">Buttons</a>
-                <a class="collapse-item" href="cards.html">Cards</a>
+                <h6 class="collapse-header">Custom Users</h6>
+                <ul>
+                    <li><a class="collapse-item" href="/admin/users">Users</a></li>
+                    <li><a class="collapse-item" href="/admin/roles">Roles</a></li>
+                    <li><a class="collapse-item" href="/audits">Audits</a></li>
+                    <li><a class="collapse-item" href="/logs">Logs</a></li>
+                </ul>
+            </div>
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom Utilities</h6>
+                <ul>
+                    <li><a class="collapse-item" href="/admin/types">Types</a></li>
+                    <li><a class="collapse-item" href="/admin/statuses">Statuses</a></li>
+                    <li><a class="collapse-item" href="/admin/classes">Classes</a></li>
+                </ul>
             </div>
         </div>
     </li>
 
-    <!-- Nav Item - Utilities Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-            aria-expanded="true" aria-controls="collapseUtilities">
-            <i class="fas fa-fw fa-wrench"></i>
-            <span>Utilities</span>
+    <!-- Nav Item - Hr Collapse Menu -->
+    <li class="nav-item" sec:authorize="hasAnyRole('HRO')">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseHr" aria-expanded="true"
+            aria-controls="collapsePages">
+            <i class="fas fa-fw fa-users"></i>
+            <span>People</span>
         </a>
-        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+        <div id="collapseHr" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Custom Utilities:</h6>
-                <a class="collapse-item" href="utilities-color.html">Colors</a>
-                <a class="collapse-item" href="utilities-border.html">Borders</a>
-                <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                <a class="collapse-item" href="utilities-other.html">Other</a>
+                <h6 class="collapse-header">Custom HRM</h6>
+                <ul>
+                    <li><a class="collapse-item" href="/hr/employees">Employees</a></li>
+                    <li><a class="collapse-item" href="/hr/departments">Departments</a></li>
+                    <li><a class="collapse-item" href="/hr/committees">Committees</a></li>
+                    <li><a class="collapse-item" href="/hr/board">Board</a></li>
+                </ul>
             </div>
         </div>
     </li>
 
-    <!-- Divider -->
-    <hr class="sidebar-divider">
-
-    <!-- Heading -->
-    <div class="sidebar-heading">
-        Addons
-    </div>
-
-    <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
+    <!-- Nav Item - Applications Collapse Menu -->
+    <li class="nav-item" sec:authorize="hasAnyRole('HRO', 'CEO', 'ICT')">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
             aria-controls="collapsePages">
-            <i class="fas fa-fw fa-folder"></i>
-            <span>Pages</span>
+            <i class="fas fa-fw fa-th-large"></i>
+            <span>Applications</span>
         </a>
         <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Login Screens:</h6>
-                <a class="collapse-item" href="login.html">Login</a>
-                <a class="collapse-item" href="register.html">Register</a>
-                <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                <div class="collapse-divider"></div>
-                <h6 class="collapse-header">Other Pages:</h6>
-                <a class="collapse-item" href="404.html">404 Page</a>
-                <a class="collapse-item" href="blank.html">Blank Page</a>
+                <h6 class="collapse-header">Custom AMS</h6>
+                <ul>
+                    <li><a class="collapse-item" href="/applications">Applications</a></li>
+                    <li><a class="collapse-item" href="/applicatioins/leaves">Leaves</a></li>
+                    <li><a class="collapse-item" href="/applications/transfers">Transfers</a></li>
+                    <li><a class="collapse-item" href="/applications/promotions">Promotions</a></li>
+                </ul>
             </div>
         </div>
     </li>
 
-    <!-- Nav Item - Charts -->
+    <!-- Nav Item - Tasks Collapse Menu -->
     <li class="nav-item">
-        <a class="nav-link" href="charts.html">
-            <i class="fas fa-fw fa-chart-area"></i>
-            <span>Charts</span></a>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTask" aria-expanded="true"
+            aria-controls="collapseTwo">
+            <i class="fas fa-fw fa-tasks"></i>
+            <span>Tasks</span>
+        </a>
+        <div id="collapseTask" class="collapse" aria-labelledby="headingTask" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom TMS</h6>
+                <ul>
+                    <li><a class="collapse-item" href="/tasks">Tasks</a></li>
+                    <li><a class="collapse-item" href="/task/history">History</a></li>
+                </ul>
+            </div>
+        </div>
     </li>
 
-    <!-- Nav Item - Tables -->
+    <!-- Nav Item - Procurement Collapse Menu -->
+    <li class="nav-item" sec:authorize="hasAnyRole('PMO', 'CEO', 'ICT', 'ACO', 'BDM')">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+            aria-expanded="true" aria-controls="collapseUtilities">
+            <i class="fas fa-fw fa-shopping-cart"></i>
+            <span>Procurement</span>
+        </a>
+        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom PM</h6>
+                <ul>
+                    <li><a class="collapse-item" href="/assets">Assets</a></li>
+                    <li><a class="collapse-item" href="/asset/reports">Reports</a></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <!-- Nav Item - Documents Collapse Menu -->
     <li class="nav-item">
-        <a class="nav-link" href="tables.html">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Tables</span></a>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDocuments"
+            aria-expanded="true" aria-controls="collapseUtilities">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Documents</span>
+        </a>
+        <div id="collapseDocuments" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom DOCS</h6>
+                <ul>
+                    <li><a class="collapse-item" href="/documents">Documents</a></li>
+                    <li><a class="collapse-item" href="/document/history">History</a></li>
+                    <li><a class="collapse-item" href="/document/reports">Reports</a></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <!-- Nav Item - eXECUTIVE Collapse Menu -->
+    <li class="nav-item" sec:authorize="hasAnyRole('CEO', 'BDM', 'CMM')">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseExec" aria-expanded="true"
+            aria-controls="collapseTwo">
+            <i class="fas fa-fw fa-user-tie"></i>
+            <span>Executive</span></a>
+        </a>
+        <div id="collapseExec" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom Exec</h6>
+                <ul>
+                    <li><a class="collapse-item" href="/executive/board">Board</a></li>
+                    <li><a class="collapse-item" href="/executive/departments">Departments</a></li>
+                    <li><a class="collapse-item" href="/executive/committees">Committees</a></li>
+                </ul>
+            </div>
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Custom Utilities</h6>
+                <ul>
+                    <li><a class="collapse-item" href="/executive/board">Board members</a></li>
+                    <li><a class="collapse-item" href="/structure">Structute</a></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <div class="collapse-divider"></div>
+
+    <!-- Nav Item - Budgets -->
+    <li class="nav-item" sec:authorize="hasAnyRole('ACO', 'CEO', 'BDM', 'CMM')">
+        <a class="nav-link" href="/budgets">
+            <i class="fas fa-fw fa-money-bill-wave"></i>
+            <span>Budgets</span></a>
+    </li>
+
+    <!-- Nav Item - Audits -->
+    <li class="nav-item" sec:authorize="hasRole('ACO')">
+        <a class="nav-link" href="/audits">
+            <i class="fas fa-fw fa-clipboard-check"></i>
+            <span>Audits</span></a>
+    </li>
+
+    <!-- Nav Item - Reports -->
+    <li class="nav-item">
+        <a class="nav-link" href="/reports">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>Reports</span></a>
     </li>
 
     <!-- Divider -->
@@ -114,10 +205,14 @@
     <!-- Sidebar Message -->
     <div class="sidebar-card d-none d-lg-flex">
         <img class="sidebar-card-illustration mb-2" th:src="@{/images/undraw_rocket.svg}" alt="...">
-        <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components,
+        <p class="text-center mb-2"><strong>Mfano Pro</strong> is packed with premium features, components,
             and more!</p>
         <a class="btn btn-success btn-sm" href="#">Upgrade to Pro!</a>
     </div>
 
+    <!-- Nav Item - Logout -->
+    <button class="btn btn-sm btn-warning mx-3" data-toggle="modal" data-target="#logoutModal">
+        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+        <span>Logout</span></button>
 </ul>
 <!-- End of Sidebar -->

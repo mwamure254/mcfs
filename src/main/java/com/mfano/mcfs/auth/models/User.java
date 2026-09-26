@@ -13,7 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -37,7 +37,6 @@ public class User extends BaseObject {
     @Column(unique = true)
     private String email;
     
-    @Column(unique = true)
     private String gender;
 
     private String password;
@@ -48,7 +47,7 @@ public class User extends BaseObject {
     @JoinColumn(name = "branch_id")
     private Branch branch;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 

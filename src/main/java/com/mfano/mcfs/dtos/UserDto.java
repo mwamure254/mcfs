@@ -26,9 +26,6 @@ public class UserDto {
   private String fin;
   private String lan;
   private String gender;
-  @NotNull 
   private Long branch;
-  @NotNull 
   private Long role;
-
 }

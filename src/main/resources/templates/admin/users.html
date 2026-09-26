@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+    <!-- Meta -->
+    <meta name="description" content="MCFS Admin - Manage Users">
+    <meta name="author" content="Mfano">
+
+    <!-- Title -->
+    <title>MCFS | Users</title>
+</th:block>
+
+<body id="page-top">
+    <div id="wrapper">
+
+        <!-- ================= SIDEBAR ================= -->
+        <th:block th:insert="~{partials/_sidebar}" />
+        <!-- ================ END SIDEBAR ============== -->
+
+        <!-- ================= CONTENT ================= -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <!-- ================= TOPBAR ================= -->
+                <th:block th:insert="~{partials/_topbar}" />
+                <!-- ================ END TOPBAR ============== -->
+
+                <!-- ================= PAGE CONTENT ================= -->
+                <div class="container-fluid px-4 py-4" style="width: 80%">
+                    <!-- ================= PAGE HEADER ================= -->
+                    <div class="d-flex flex-column flex-md-row
+                            justify-content-between align-items-md-center mb-4">
+
+                        <div>
+                            <h1 class="h3 mb-1 text-gray-800">
+                                <i class="fas fa-users mr-2"></i>
+                                Users
+                            </h1>
+                            <p class="text-muted mb-0">
+                                Manage users, roles and availability
+                            </p>
+                        </div>
+
+                        <button type="button" class="btn btn-primary mt-3 mt-md-0" data-toggle="modal"
+                            data-target="#addModal">
+                            <i class="fas fa-user-plus mr-1"></i>
+                            Add User
+                        </button>
+                    </div>
+
+                    <!-- ================= USERS CARD ================= -->
+                    <div class="card shadow-sm border-0">
+                        <!-- CARD HEADER -->
+                        <div class="card-header bg-white py-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-6 mb-2 mb-md-0">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-user-shield mr-1"></i>
+                                        System Users
+                                    </h6>
+                                </div>
+
+                                <!-- SEARCH -->
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fas fa-search text-muted"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" id="userSearch" class="form-control"
+                                            placeholder="Search users..." aria-label="Search users">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD BODY -->
+                        <div class="card-body p-0">
+                            <div class="table-responsive" style="max-height: 560px; overflow-y: auto;">
+                                <table class="table table-hover table-striped mb-0" id="uTable">
+                                    <thead class="thead-light sticky-top">
+                                        <tr>
+                                            <th class="text-center" style="width: 60px;">
+                                                #
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-envelope mr-1"></i>
+                                                User
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-user-tag mr-1"></i>
+                                                Role
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-venus-mars mr-1"></i>
+                                                Gender
+                                            </th>
+                                            <th>
+                                                <i class="fas fa-code-branch mr-1"></i>
+                                                Branch
+                                            </th>
+                                            <th class="text-center">
+                                                <i class="fas fa-toggle-on mr-1"></i>
+                                                Status
+                                            </th>
+                                            <th class="text-center" style="width: 150px;">
+                                                <i class="fas fa-cogs mr-1"></i>
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <!-- ================= USER ROW ================= -->
+                                        <tr th:each="u, stat : ${users}">
+                                            <!-- NUMBER -->
+                                            <td class="text-center font-weight-bold" th:text="${stat.count}">
+                                                1
+                                            </td>
+
+                                            <!-- USER -->
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="mr-2">
+                                                        <div class="rounded-circle bg-primary text-white
+                                                            d-flex align-items-center justify-content-center"
+                                                            style="width: 36px; height: 36px;">
+                                                            <i class="fas fa-user"></i>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="text-truncate" style="max-width: 220px;">
+                                                        <a th:href="@{/admin/manage/user/{id}(id=${u.id})}"
+                                                            class="font-weight-bold text-primary text-truncate d-block"
+                                                            th:text="${u.email}" title="View user">
+                                                            user@example.com
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <!-- ROLE -->
+                                            <td>
+                                                <div th:if="${u.roles != null and !u.roles.isEmpty()}">
+                                                    <span th:each="role : ${u.roles}"
+                                                        class="badge badge-primary mr-1 mb-1" th:text="${role.name}">
+                                                        ADMIN
+                                                        </spa>
+                                                </div>
+                                                <span th:if="${u.roles == null or u.roles.isEmpty()}"
+                                                    class="text-muted">
+                                                    No Role
+                                                </span>
+                                            </td>
+
+                                            <!-- GENDER -->
+                                            <td>
+                                                <span th:if="${u.gender != null and !u.gender.isEmpty()}"
+                                                    th:text="${u.gender}">
+                                                    Male
+                                                </span>
+                                                <span th:unless="${u.gender != null and !u.gender.isEmpty()}"
+                                                    class="text-muted">
+                                                    —
+                                                </span>
+                                            </td>
+
+                                            <!-- BRANCH -->
+                                            <td>
+                                                <span th:if="${u.branch != null}" th:text="${u.branch.name}">
+                                                    Main Branch
+                                                </span>
+                                                <span th:unless="${u.branch != null}" class="text-muted">
+                                                    No Branch
+                                                </span>
+                                            </td>
+
+                                            <!-- STATUS -->
+                                            <td class="text-center">
+                                                <span th:if="${u.enabled}" class="badge badge-success px-2 py-1">
+                                                    <i class="fas fa-check-circle mr-1"></i>
+                                                    Active
+                                                </span>
+                                                <span th:unless="${u.enabled}" class="badge badge-danger px-2 py-1">
+                                                    <i class="fas fa-times-circle mr-1"></i>
+                                                    Inactive
+                                                </span>
+                                            </td>
+
+                                            <!-- ACTIONS -->
+                                            <td class="text-center">
+                                                <div class="btn-group" role="group" aria-label="User actions">
+
+                                                    <!-- EDIT -->
+                                                    <a class="btn btn-sm btn-outline-primary"
+                                                        th:href="@{/admin/manage/user/{id}(id=${u.id})}" title="Edit user">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+
+                                                    <!-- TOGGLE -->
+                                                    <form th:action="@{/admin/users/toggle/{id}(id=${u.id})}"
+                                                        method="post" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-outline-warning"
+                                                            th:title="${u.enabled ? 'Deactivate' : 'Activate'}">
+
+                                                            <i th:class="${u.enabled
+                                                        ? 'fas fa-toggle-on'
+                                                        : 'fas fa-toggle-off'}">
+                                                            </i>
+                                                        </button>
+                                                    </form>
+
+                                                    <!-- DELETE -->
+                                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                                        data-toggle="modal" th:data-target="'#deleteModal' + ${u.id}"
+                                                        title="Delete user">
+
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </div>
+
+                                                <!-- ================= DELETE MODAL ================= -->
+                                                <div class="modal fade" th:id="'deleteModal' + ${u.id}" tabindex="-1"
+                                                    role="dialog" aria-hidden="true">
+
+                                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title text-danger">
+                                                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                                                    Delete User
+                                                                </h5>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+
+                                                                    <span aria-hidden="true">
+                                                                        &times;
+                                                                    </span>
+                                                                </button>
+                                                            </div>
+
+                                                            <div class="modal-body text-left">
+                                                                <p class="mb-2">
+                                                                    Are you sure you want to delete
+                                                                    <strong th:text="${u.email}">
+                                                                        user@example.com
+                                                                    </strong>?
+                                                                </p>
+
+                                                                <div class="alert alert-warning mb-0">
+                                                                    <i class="fas fa-exclamation-circle mr-1"></i>
+                                                                    This action cannot be undone.
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">
+
+                                                                    <i class="fas fa-times mr-1"></i>
+                                                                    Cancel
+                                                                </button>
+
+                                                                <form
+                                                                    th:action="@{/admin/users/delete/{id}(id=${u.id})}"
+                                                                    method="post">
+
+                                                                    <button type="submit" class="btn btn-danger">
+                                                                        <i class="fas fa-trash-alt mr-1"></i>
+                                                                        Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- ============== END DELETE MODAL ============== -->
+                                            </td>
+                                        </tr>
+
+                                        <!-- ================= EMPTY STATE ================= -->
+                                        <tr th:if="${#lists.isEmpty(users)}">
+                                            <td colspan="7" class="text-center py-5">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-users fa-3x mb-3"></i>
+                                                    <h5 class="font-weight-bold">
+                                                        No Users Found
+                                                    </h5>
+                                                    <p class="mb-3">
+                                                        There are currently no users configured.
+                                                    </p>
+                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                        data-toggle="modal" data-target="#addModal">
+                                                        <i class="fas fa-user-plus mr-1"></i>
+                                                        Add First User
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- CARD FOOTER -->
+                        <div class="card-footer bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-users mr-1"></i>
+                                    Total Users:
+                                    <strong th:text="${users != null ? users.size() : 0}">
+                                        0
+                                    </strong>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ================ END USERS CARD ================ -->
+                </div>
+                <!-- ================ END PAGE CONTENT ================ -->
+            </div>
+
+            <!-- ================= FOOTER ================= -->
+            <th:block th:insert="~{partials/_footer}" />
+            <!-- ================ END FOOTER =============== -->
+        </div>
+    </div>
+
+    <!-- ================= ADD USER MODAL ================= -->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form th:action="@{/admin/users/save}" method="post">
+
+                    <!-- MODAL HEADER -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addUserModalLabel">
+
+                            <i class="fas fa-user-plus mr-2"></i>
+                            Add User
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+
+                            <span aria-hidden="true">
+                                &times;
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- MODAL BODY -->
+                    <div class="modal-body">
+
+                        <!-- PERSONAL INFORMATION -->
+                        <h6 class="font-weight-bold text-primary mb-3">
+                            <i class="fas fa-user mr-1"></i>
+                            Personal Information
+                        </h6>
+
+                        <div class="form-row">
+                            <!-- FIRST NAME -->
+                            <div class="form-group col-md-6">
+                                <label for="firstName">
+                                    First Name
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                    </div>
+                                    <input name="fin" type="text" class="form-control" id="firstName"
+                                        placeholder="Enter first name" maxlength="50" required>
+
+                                </div>
+                            </div>
+
+                            <!-- LAST NAME -->
+                            <div class="form-group col-md-6">
+                                <label for="lastName">
+                                    Last Name
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                    </div>
+                                    <input name="lan" type="text" class="form-control" id="lastName"
+                                        placeholder="Enter last name" maxlength="50" required>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ACCOUNT INFORMATION -->
+                        <h6 class="font-weight-bold text-primary mb-3 mt-2">
+                            <i class="fas fa-lock mr-1"></i>
+                            Account Information
+                        </h6>
+
+                        <div class="form-row">
+                            <!-- EMAIL -->
+                            <div class="form-group col-md-6">
+                                <label for="email">
+                                    Email Address
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-envelope"></i>
+                                        </span>
+                                    </div>
+                                    <input name="email" type="email" class="form-control" id="email"
+                                        placeholder="user@example.com" required>
+
+                                </div>
+                            </div>
+
+                            <!-- PASSWORD -->
+                            <div class="form-group col-md-6">
+                                <label for="password">
+                                    Password
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-key"></i>
+                                        </span>
+                                    </div>
+                                    <input name="password" type="password" class="form-control" id="password"
+                                        placeholder="Enter password" minlength="6" required>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ACCESS INFORMATION -->
+                        <h6 class="font-weight-bold text-primary mb-3 mt-2">
+                            <i class="fas fa-user-shield mr-1"></i>
+                            Access & Assignmen
+                        </h6>
+
+                        <div class="form-row">
+                            <!-- GENDER -->
+                            <div class="form-group col-md-4">
+                                <label for="gender">
+                                    Gender
+                                </label>
+                                <select class="form-control" name="gender" id="gender" required>
+                                    <option value="" selected disabled>
+                                        Select
+                                    </option>
+
+                                    <option value="Male">
+                                        Male
+                                    </option>
+                                    <option value="Female">
+                                        Female
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- ROLE -->
+                            <div class="form-group col-md-4">
+                                <label for="role">
+                                    User Role
+                                </label>
+                                <select class="form-control" name="role" id="role" required>
+
+                                    <option value="" selected disabled>
+                                        Select
+                                    </option>
+                                    <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- BRANCH -->
+                            <div class="form-group col-md-4">
+
+                                <label for="branch">
+                                    User Branch
+                                </label>
+                                <select class="form-control" name="branch" id="branch" required>
+
+                                    <option value="" selected disabled>
+                                        Select
+                                    </option>
+                                    <option th:each="s : ${stores}" th:value="${s.id}" th:text="${s.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- MODAL FOOTER -->
+                    <div class="modal-footer">
+
+                        <button type="reset" class="btn btn-light">
+                            <i class="fas fa-eraser mr-1"></i>
+                            Clear
+                        </button>
+
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+
+                            <i class="fas fa-times mr-1"></i>
+                            Cancel
+                        </button>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-1"></i>
+                            Save User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- ================ END ADD USER MODAL ================ -->
+
+    <!-- ================= SCRIPTS ================= -->
+    <th:block th:insert="~{partials/_scripts}" />
+    <!-- ================ END SCRIPTS ================ -->
+
+    <!-- ================= USER SEARCH ================= -->
+    <script>
+
+        $(document).ready(function () {
+
+            $("#userSearch").on("keyup", function () {
+
+                const value = $(this).val().toLowerCase();
+
+                $("#uTable tbody tr").filter(function () {
+
+                    $(this).toggle(
+                        $(this).text().toLowerCase().indexOf(value) > -1
+                    );
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

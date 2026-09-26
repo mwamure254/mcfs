@@ -9,5 +9,5 @@ import com.mfano.mcfs.auth.models.AuditEntry;
 public interface AuditRepository extends JpaRepository<AuditEntry, Long> {
 
     List<AuditEntry> findByAction(String action);
-    
+    AuditEntry findByCreatedBy(String email);
 }

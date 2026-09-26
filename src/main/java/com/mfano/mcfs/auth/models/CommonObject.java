@@ -15,7 +15,7 @@ import jakarta.persistence.PreUpdate;
 import lombok.Data;
 
 import com.mfano.mcfs.config.CustomUserDetails;
-import com.mfano.mcfs.auth.models.User;
+//import com.mfano.mcfs.auth.models.User;
 
 @Data
 @MappedSuperclass
@@ -26,6 +26,8 @@ public abstract class CommonObject {
     private Long id;
 
     private String createdBy;
+    @Column(nullable = false)
+    private boolean active;
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;

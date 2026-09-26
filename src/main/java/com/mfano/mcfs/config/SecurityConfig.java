@@ -31,6 +31,8 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/",
                         "/landing",
+                        "/forgot",
+                        "/error/**",
                         "/login",
                         "/css/**",
                         "/js/**",
@@ -41,21 +43,35 @@ public class SecurityConfig {
                 .permitAll()
 
                 // Protected pages
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/manager/**").hasRole("MANAGER")
-                .requestMatchers("/cashier/**").hasRole("CASHIER")
-                .requestMatchers("/procurement/**").hasRole("PROCUREMENT")
+                .requestMatchers("/admin/**").hasAnyRole("ADMIN","CEO")
+                .requestMatchers("/ict/**").hasAnyRole("ICT","CEO")
+                .requestMatchers("/procurment/**").hasAnyRole("PMO","CEO")
+                .requestMatchers("/hr/**").hasAnyRole("HRO", "CEO")
+                .requestMatchers("/accounts/**").hasAnyRole("ACO","CEO")
+                .requestMatchers("/records/**").hasAnyRole("RMO","CEO")
+                .requestMatchers("/executive/**").hasAnyRole("CEO","BDM","CMM")
+
+                .requestMatchers("/profile", "/reports", "/documents/**", "/tasks/**").hasAnyRole("ADMIN","ICT","CEO","PMO","BDM","CMM","RMO","HRO","ACO")
+                .requestMatchers("/audits", "/logs").hasAnyRole("ADMIN","CEO","ICT","ACO")
+                .requestMatchers("/budgets").hasAnyRole("CEO","BDM","CMM","ACO")
+                .requestMatchers("/assets/**").hasAnyRole("PMO","CEO","BDM","ACO","ICT")
+                .requestMatchers("/applications/**").hasAnyRole("HRO","CEO","ICT")
 
                 .anyRequest().authenticated())
 
+                 // 403 Access Denied
+                .exceptionHandling(exception -> exception
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.sendRedirect("/error/403");
+                     })
+                )
+
                 .formLogin(form -> form
-                        //If you want a defaultb landing page or /login
-                        .loginPage("/landing")
-                        .loginProcessingUrl("/login")
+                        //If you want a default /lnding page or /login
+                        .loginPage("/login")
+                        //.loginProcessingUrl("/login") //open when /landing is login page
                         .successHandler(auth)
                         .failureHandler(auth)
-                        //.defaultSuccessUrl("/", true)
-                        //.failureUrl("/login?error=true")
                         .permitAll())
 
                 .logout(logout -> logout
@@ -64,7 +80,7 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("/landing")
+                        .logoutSuccessUrl("/login?logout")
                         .permitAll());
 
         return http.build();

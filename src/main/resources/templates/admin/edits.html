@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
+    <meta name="description" content="MCFS Object Edit page">
+    <meta name="author" content="mfano">
+    <title>MCFS | Edit Object</title>
+</th:block>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <th:block th:insert="~{partials/_sidebar}" />
+        <!-- End Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <th:block th:insert="~{partials/_topbar}" />
+                <!-- End Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid" style="width: 80%">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <i class="fas fa-edit mr-2"></i>Edit <span th:text="${rame ?: 'Object'}"></span>
+                        </h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a th:href="@{/}"><i class="fas fa-home"></i> Admin Home</a></li>
+                                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Security</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Edit Object</li>
+                            </ol>
+                        </nav>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-lg-12">
+
+                            <form th:action="@{'/admin/' + ${url} + '/update/' + ${role.id}}" method="post">
+                                <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
+                                
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Object Information</h6>
+                                    </div>
+                                    <div class="card-body">
+
+                                        <div class="form-group row">
+                                            <label for="txtNameEdit" class="col-sm-3 col-form-label">Object Name <span class="text-danger">*</span></label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="txtNameEdit" name="name"
+                                                    th:value="${role.name}" placeholder="Object Name" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="txtOwnerEdit" class="col-sm-3 col-form-label">Created By</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="txtOwnerEdit"
+                                                    th:value="${role.createdBy}" placeholder="Created By" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="txtCreatedEdit" class="col-sm-3 col-form-label">Created At</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="txtCreatedEdit"
+                                                    th:value="${#temporals.format(role.createdAt, 'dd MMM yyyy HH:mm')}"
+                                                    placeholder="Created At" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="txtDescriptionEdit" class="col-sm-3 col-form-label">Description</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" id="txtDescriptionEdit" name="description"
+                                                    maxlength="200" placeholder="Object Description"
+                                                    th:text="${role.description}" rows="4"></textarea>
+                                                <small class="form-text text-muted">Max 200 characters</small>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="float-right">
+                                            <a th:href="@{/admin/{url}(url=${url})}" class="btn btn-secondary">
+                                                <i class="fas fa-times mr-1"></i> Cancel
+                                            </a>
+                                            <button type="reset" class="btn btn-warning">
+                                                <i class="fas fa-broom mr-1"></i> Clear
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save mr-1"></i> Save Record
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <th:block th:insert="~{partials/_footer}" />
+            <!-- End Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scripts -->
+    <th:block th:insert="~{partials/_scripts}" />
+</body>
+
+</html>
