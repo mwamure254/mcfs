@@ -205,74 +205,134 @@
                             </div>
 
                             <!-- Audit Table -->
-                            <div th:if="${auditEntries != null and !#lists.isEmpty(auditEntries)}"
-                                class="table-responsive">
+                            <div th:if="${auditEntries != null and !#lists.isEmpty(auditEntries)}">
 
-                                <table class="table table-bordered table-hover table-sm" width="100%" cellspacing="0"
-                                    id="auditTable">
+                                <!-- Table Viewport -->
+                                <div class="table-responsive audit-table-container">
 
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th width="5%">#</th>
-                                            <th width="15%">Action</th>
-                                            <th width="15%">Performed By</th>
-                                            <th width="15%">Status</th>
-                                            <th width="18%">Time</th>
-                                            <th>Details</th>
-                                        </tr>
-                                    </thead>
+                                    <table class="table table-striped table-hover table-sm mb-0" width="100%"
+                                        cellspacing="0" id="auditTable">
 
-                                    <tbody>
-                                        <tr th:each="a, stat : ${auditEntries}">
-                                            <!-- Serial Number -->
-                                            <td class="text-center font-weight-bold" th:text="${stat.count}">
-                                                1
-                                            </td><!-- Action -->
-                                            <td>
-                                                <span class="badge" th:classappend="${#strings.containsIgnoreCase(a.action, 'login')
-                           ? 'badge-success'
-                           : #strings.containsIgnoreCase(a.action, 'logout')
-                           ? 'badge-warning'
-                           : #strings.containsIgnoreCase(a.action, 'delete')
-                           ? 'badge-danger'
-                           : #strings.containsIgnoreCase(a.action, 'update')
-                           ? 'badge-info'
-                           : 'badge-primary'}" th:text="${a.action}">
-                                                    ACTION
-                                                </span>
-                                            </td>
-                                            <!-- Created By -->
-                                            <td>
-                                                <i class="fas fa-user fa-sm text-gray-400 mr-1"></i>
-                                                <span th:text="${a.createdBy}">
-                                                    User
-                                                </span>
-                                            </td>
-                                            <!-- Action Type -->
-                                            <td>
-                                                <span class="badge badge-success" th:if="${a.actionType == 'SUCCESS'}">
-                                                    <i class="fas fa-bolt fa-sm mr-1"></i>
-                                                    <span >Success</span>
-                                                </span>
-                                                <span class="badge badge-danger" th:if="${a.actionType == 'FAIL'}">
-                                                    <i class="fas fa-bolt fa-sm mr-1"></i>
-                                                    <span>Failed</span>
-                                                </span>
-                                            </td>
-                                            <!-- Created At -->
-                                            <td>
-                                                <i class="fas fa-clock fa-sm text-gray-400 mr-1"></i>
-                                                <span th:text="${#temporals.format(a.createdAt, 'dd MMM yyyy HH:mm')}">
-                                                    Date
-                                                </span>
-                                            </td>
-                                            <!-- Details -->
-                                            <td class="text-wrap" style="max-width: 400px;" th:text="${a.details}">
-                                                Audit details
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th width="5%">#</th>
+                                                <th width="15%">Action</th>
+                                                <th width="15%">Performed By</th>
+                                                <th width="15%">Status</th>
+                                                <th width="18%">Time</th>
+                                                <th>Details</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr th:each="a, stat : ${auditEntries}">
+
+                                                <!-- Serial Number -->
+                                                <td class="text-center font-weight-bold">
+                                                    <span th:text="${stat.count}">1</span>
+                                                </td>
+
+                                                <!-- Action -->
+                                                <td>
+                                                    <span class="badge" th:classappend="${#strings.containsIgnoreCase(a.action, 'login')
+                                  ? 'badge-success'
+                                  : #strings.containsIgnoreCase(a.action, 'logout')
+                                  ? 'badge-warning'
+                                  : #strings.containsIgnoreCase(a.action, 'delete')
+                                  ? 'badge-danger'
+                                  : #strings.containsIgnoreCase(a.action, 'update')
+                                  ? 'badge-info'
+                                  : 'badge-primary'}" th:text="${a.action}">
+                                                        ACTION
+                                                    </span>
+                                                </td>
+
+                                                <!-- Created By -->
+                                                <td>
+                                                    <i class="fas fa-user fa-sm text-gray-400 mr-1"></i>
+                                                    <span th:text="${a.createdBy}">
+                                                        User
+                                                    </span>
+                                                </td>
+
+                                                <!-- Action Type -->
+                                                <td>
+                                                    <span class="badge badge-success"
+                                                        th:if="${a.actionType == 'SUCCESS'}">
+                                                        <i class="fas fa-bolt fa-sm mr-1"></i>
+                                                        Success
+                                                    </span>
+
+                                                    <span class="badge badge-danger" th:if="${a.actionType == 'FAIL'}">
+                                                        <i class="fas fa-bolt fa-sm mr-1"></i>
+                                                        Failed
+                                                    </span>
+                                                </td>
+
+                                                <!-- Created At -->
+                                                <td>
+                                                    <i class="fas fa-clock fa-sm text-gray-400 mr-1"></i>
+
+                                                    <span th:text="${#temporals.format(
+                            a.createdAt,
+                            'dd MMM yyyy HH:mm'
+                        )}">
+                                                        Date
+                                                    </span>
+                                                </td>
+
+                                                <!-- Details -->
+                                                <td class="text-wrap audit-details" th:text="${a.details}">
+                                                    Audit details
+                                                </td>
+
+                                            </tr>
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                                <!-- Pagination -->
+                                <div class="d-flex flex-column flex-md-row
+                justify-content-between
+                align-items-center mt-3">
+
+                                    <!-- Showing information -->
+                                    <small class="text-muted mb-2 mb-md-0" id="auditPageInfo">
+                                        Showing 1–10 of 0 entries
+                                    </small>
+
+                                    <!-- Pagination -->
+                                    <nav aria-label="Audit log pagination">
+                                        <ul class="pagination pagination-sm mb-0" id="auditPagination">
+
+                                            <li class="page-item" id="auditPrevious">
+                                                <a class="page-link" href="#" aria-label="Previous">
+                                                    <i class="fas fa-angle-left"></i>
+                                                    <span class="d-none d-sm-inline ml-1">
+                                                        Previous
+                                                    </span>
+                                                </a>
+                                            </li>
+
+                                            <!-- Page numbers generated by JavaScript -->
+                                            <li class="page-item" id="auditNext">
+                                                <a class="page-link" href="#" aria-label="Next">
+                                                    <span class="d-none d-sm-inline mr-1">
+                                                        Next
+                                                    </span>
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
+                                            </li>
+
+                                        </ul>
+
+                                    </nav>
+
+                                </div>
+
                             </div>
                         </div>
 
@@ -322,17 +382,227 @@
 
     <!-- ================= TABLE SEARCH ================= -->
     <script>
-
         $(document).ready(function () {
-            $("#auditSearch").on("keyup", function () {
-                const value = $(this).val().toLowerCase();
 
-                $("#auditTable tbody tr").filter(function () {
-                    $(this).toggle(
-                        $(this).text().toLowerCase().indexOf(value) > -1
+            const table = $("#auditTable");
+            const tbody = table.find("tbody");
+
+            const rows = tbody.find("tr");
+
+            const previousButton = $("#auditPrevious");
+            const nextButton = $("#auditNext");
+            const pagination = $("#auditPagination");
+            const pageInfo = $("#auditPageInfo");
+
+            const searchInput = $("#auditSearch");
+
+            // Number of records per page
+            const rowsPerPage = 20;
+
+            let currentPage = 1;
+            let filteredRows = rows;
+
+            /*
+             * ==========================================
+             * DISPLAY TABLE
+             * ==========================================
+             */
+            function displayTable() {
+                const totalRows = filteredRows.length;
+                const totalPages = Math.max(
+                    1,
+                    Math.ceil(totalRows / rowsPerPage)
+                );
+
+                // Make sure current page is valid
+                if (currentPage > totalPages) {
+                    currentPage = totalPages;
+                }
+
+                const start = (currentPage - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+
+                // Hide every row first
+                rows.hide();
+
+                // Show rows for current page
+                filteredRows.slice(start, end).show();
+
+                /*
+                 * ==========================================
+                 * PAGE INFORMATION
+                 * ==========================================
+                 */
+                if (totalRows === 0) {
+                    pageInfo.text("No entries found");
+
+                } else {
+
+                    const first = start + 1;
+                    const last = Math.min(end, totalRows);
+
+                    pageInfo.text(
+                        "Showing " +
+                        first +
+                        "–" +
+                        last +
+                        " of " +
+                        totalRows +
+                        " entries"
                     );
-                });
+                }
+
+                /*
+                 * ==========================================
+                 * PREVIOUS BUTTON
+                 * ==========================================
+                 */
+                if (currentPage <= 1) {
+
+                    previousButton.addClass("disabled");
+
+                } else {
+
+                    previousButton.removeClass("disabled");
+                }
+
+                /*
+                 * ==========================================
+                 * NEXT BUTTON
+                 * ==========================================
+                 */
+                if (currentPage >= totalPages) {
+
+                    nextButton.addClass("disabled");
+
+                } else {
+
+                    nextButton.removeClass("disabled");
+                }
+
+                /*
+                 * ==========================================
+                 * PAGE NUMBERS
+                 * ==========================================
+                 */
+                pagination
+                    .find(".audit-page-number")
+                    .remove();
+
+                /*
+                 * Show a limited number of page buttons
+                 */
+                let startPage = Math.max(
+                    1,
+                    currentPage - 2
+                );
+
+                let endPage = Math.min(
+                    totalPages,
+                    startPage + 4
+                );
+
+                // Adjust start if near the end
+                if ((endPage - startPage) < 4) {
+                    startPage = Math.max(
+                        1,
+                        endPage - 4
+                    );
+                }
+
+                for (let page = startPage; page <= endPage; page++) {
+
+                    const li = $("<li>")
+                        .addClass("page-item audit-page-number");
+
+                    if (page === currentPage) {
+                        li.addClass("active");
+                    }
+
+                    const link = $("<a>")
+                        .addClass("page-link")
+                        .attr("href", "#")
+                        .text(page);
+
+                    link.on("click", function (event) {
+                        event.preventDefault();
+                        currentPage = page;
+                        displayTable();
+                    });
+
+                    li.append(link);
+
+                    // Insert before Next button
+                    nextButton.before(li);
+                }
+            }
+
+            /*
+             * ==========================================
+             * PREVIOUS
+             * ==========================================
+             */
+            previousButton.find("a").on("click", function (event) {
+                event.preventDefault();
+                if (currentPage > 1) {
+
+                    currentPage--;
+
+                    displayTable();
+                }
+
             });
+
+            /*
+             * ==========================================
+             * NEXT
+             * ==========================================
+             */
+            nextButton.find("a").on("click", function (event) {
+                event.preventDefault();
+                const totalPages = Math.ceil(
+                    filteredRows.length / rowsPerPage
+                );
+
+                if (currentPage < totalPages) {
+
+                    currentPage++;
+                    displayTable();
+                }
+
+            });
+
+            /*
+             * ==========================================
+             * SEARCH
+             * ==========================================
+             */
+            searchInput.on("keyup", function () {
+                const value = $(this)
+                    .val()
+                    .toLowerCase()
+                    .trim();
+
+                filteredRows = rows.filter(function () {
+                    return $(this)
+                        .text()
+                        .toLowerCase()
+                        .indexOf(value) > -1;
+
+                });
+
+                currentPage = 1;
+                displayTable();
+            });
+
+            /*
+             * ==========================================
+             * INITIAL DISPLAY
+             * ==========================================
+             */
+            filteredRows = rows;
+            displayTable();
+
         });
     </script>
 </body>

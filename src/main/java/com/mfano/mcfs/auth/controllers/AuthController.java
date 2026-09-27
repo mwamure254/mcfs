@@ -175,6 +175,20 @@ public class AuthController {
                     dir = "accounts/audits";
                 }
                 break;
+
+            //Get logs page
+            //@PreAuthorize("isAuthenticated()")
+            case "logs":
+                if (auth == null) {
+                    model.addAttribute("error", "User not authenticated, login to proceed.");
+                    return login;
+                } else {
+                    model.addAttribute("profile", profileService.checkProfile(auth.getId()));
+                    model.addAttribute("user", userService.findById(auth.getId()));
+                    model.addAttribute("logActivities", auditService.findByActionContaining("USER_LOG"));
+                    dir = "admin/logs";
+                }
+                break;
         }
 
         return dir;
