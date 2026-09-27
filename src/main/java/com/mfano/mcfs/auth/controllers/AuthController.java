@@ -64,10 +64,6 @@ public class AuthController {
             model.addFlashAttribute("error", "Contact the system admin for account verification.");
             return login;
         }
-        //model.addFlashAttribute("profile", profileService.checkProfile(auth.getId()));
-        auditService.record(
-                "USER_LOGIN",
-                "User " + auth.getUsername() + " logged in successfully.");
 
         // Redirect based on role priority
         if (roles.contains("ROLE_ADMIN"))
@@ -107,57 +103,91 @@ public class AuthController {
         return "error/403";
     }
 
-    @GetMapping("/register")
-    public String registerForm(Model model) {
+    @GetMapping("/{option}")
+    public String getAll(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option, 
+        Model model, RedirectAttributes red) {
 
-        model.addAttribute("roles", roleService.findAll());
-        model.addAttribute("userDto", new UserDto());
-        return "security/register";
-    }
+        String dir = "redirect";
+        switch (option) {
+            //Get register page
+            case "register":
+                model.addAttribute("roles", roleService.findAll());
+                model.addAttribute("userDto", new UserDto());
+                dir = "security/register";
+                break;
 
-    @GetMapping("/login")
-    public String loginPage(
-            @RequestParam(value = "error", required = false) String error,
-            @RequestParam(value = "logout", required = false) String logout,
-            RedirectAttributes model,
-            Authentication authentication) {
+            //Get login page
+            case "login":
+                // If user is already logged in → redirect to dashboard
+                if (auth != null) {
+                    return "redirect:/";
+                }
 
-        // If user is already logged in → redirect to dashboard
-        if (authentication != null && authentication.isAuthenticated()
-                && authentication instanceof CustomUserDetails) {
-            return "redirect:/";
+                dir = "security/login"; // Return login view
+                break;
+
+            //Get logout
+            case "logout": 
+                if (auth != null) {
+                    red.addFlashAttribute("message", "You have been logged out successfully");
+                    dir = "redirect:/login?logout";
+                } else{
+                    red.addFlashAttribute("error", "Logout action failed. Please try again.");
+                    dir = "redirect:/";
+                }
+                break;
+
+            //Get resend
+            case "resend":
+                dir = "security/resend";
+                break;
+
+            //Get forgot page
+            case "forgot":
+                dir = "security/forgot-password";
+                break;
+
+            //Get profile page
+            //@PreAuthorize("isAuthenticated()")
+            case "profile":
+                if (auth == null) {
+                    model.addAttribute("error", "User not authenticated, login to proceed.");
+                    return login;
+                } else{
+                    model.addAttribute("profile", profileService.checkProfile(auth.getId()));
+                    model.addAttribute("user", userService.findById(auth.getId()));
+                    // Add user info to model (for Thymeleaf dashboard pages)
+                    model.addAttribute("user", userService.findById(auth.getId()));
+                    dir = "security/profile";
+                }
+                break;
+
+            //Get profile page
+            //@PreAuthorize("isAuthenticated()")
+            case "audits":
+                if (auth == null) {
+                    model.addAttribute("error", "User not authenticated, login to proceed.");
+                    return login;
+                } else {
+                    model.addAttribute("profile", profileService.checkProfile(auth.getId()));
+                    model.addAttribute("user", userService.findById(auth.getId()));
+                    model.addAttribute("auditEntries", auditService.findAll());
+                    dir = "accounts/audits";
+                }
+                break;
         }
 
-        // Logout confirmation
-        if (logout != null) {
-            model.addFlashAttribute("message", "You have been logged out.");
-        }
-
-        return "security/login"; // Return login view
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/profile")
-    public String userProfile(@AuthenticationPrincipal CustomUserDetails auth, Model model) {
-        if (auth == null) {
-            model.addAttribute("error", "User not authenticated, login to proceed.");
-            return login;
-        }
-        model.addAttribute("profile", profileService.checkProfile(auth.getId()));
-        // Add user info to model (for Thymeleaf dashboard pages)
-        model.addAttribute("user", userService.findById(auth.getId()));
-
-        return "security/profile";
+        return dir;
     }
 
     // profile/update @PreAuthorize("isAuthenticated()")
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/profile/update")
     public String userProfileUpdate(@AuthenticationPrincipal CustomUserDetails auth,
-            @ModelAttribute("profile") Profile profile) {
+            @ModelAttribute Profile profile) {
 
         profileService.update(auth.getId(), profile);
-        auditService.record("update_profile", "user id=" + auth.getId() + "Updated their profile");
+        auditService.record("UPDATE_PROFILE", "SUCCESS", "User " + auth.getEmail() + " updated their profile");
         return "redirect:/profile";
     }
 
@@ -171,7 +201,7 @@ public class AuthController {
         } catch (IOException e) {
             red.addFlashAttribute("error", e.getMessage());
         }
-        auditService.record("update_image", "user id=" + userid + "Updated their profile image");
+        auditService.record("UPDATE_IMAGE", "SUCCESS", "User Updated their profile image");
         red.addFlashAttribute("message", "Image updated successfully.");
         return "redirect:/profile";
     }
@@ -185,15 +215,9 @@ public class AuthController {
         } catch (IOException e) {
             red.addFlashAttribute("error", e.getMessage());
         }
-        auditService.record("delete_image", "user id=" + userid + "Deleted their profile image");
+        auditService.record("DELETE_IMAGE", "SUCCESS", "User deleted their profile image");
         red.addFlashAttribute("message", "Image deleted successfully.");
         return "redirect:/profile";
-    }
-
-    @GetMapping("/logout")
-    public String logout(RedirectAttributes model) {
-        model.addFlashAttribute("message", "You have been logged out successfully");
-        return "redirect:/login?logout";
     }
 
     @GetMapping("/verify")
@@ -211,32 +235,21 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/resend")
-    public String resendForm() {
-        return "security/resend";
-    }
-
     @PostMapping("/resend")
-    public String resendSubmit(@RequestParam("email") String email, Model model) {
+    public String resendSubmit(@RequestParam("email") String email, RedirectAttributes model) {
         User user = userService.findByEmail(email);
         if (user == null) {
-            model.addAttribute("error", "No account with that email.");
-            return "security/resend";
+            model.addFlashAttribute("error", "No account with that email.");
+            return "redirect:/resend";
         }
 
         if (user.isEnabled()) {
-            model.addAttribute("message", "Email already verified. You can login.");
-            return msg;
+            model.addFlashAttribute("message", "Email already verified. You can login.");
+            return "redirect:/login";
         }
         userService.createAndSendToken(user);
-        model.addAttribute("message", "Verification email resent. Check your inbox.");
-        return msg;
-    }
-
-    // Forgot/reset endpoints
-    @GetMapping("/forgot")
-    public String forgotForm() {
-        return "security/forgot-password";
+        model.addFlashAttribute("message", "Verification email resent. Check your inbox.");
+        return "redirect:/login";
     }
 
     @PostMapping("/forget")
@@ -274,25 +287,24 @@ public class AuthController {
 
     // self-serve password change request
     @PostMapping("/reset-password")
-    public String resetPasswordSubmit(@RequestParam String token, @RequestParam String password, Model model) {
+    public String resetPasswordSubmit(@RequestParam String token, @RequestParam String password, RedirectAttributes model) {
         var optUser = userService.getUserByPasswordResetToken(token);
         if (optUser.isEmpty()) {
-            model.addAttribute("error", "Invalid token.");
-            return msg;
+            model.addFlashAttribute("error", "Invalid token.");
+            return "redirect:/password-reset";
         }
         userService.changePassword(optUser.get(), password);
-        model.addAttribute("message", "Password changed. You can now login.");
-        return msg;
+        model.addFlashAttribute("message", "Password changed. You can now login.");
+        return "redirect:/login";
     }
 
     // logged user change password
     // Reset user password
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/reset")
-    public String resetPassword(Authentication auth, @RequestParam String password, @RequestParam String NP,
+    public String resetPassword(@AuthenticationPrincipal CustomUserDetails auth, @RequestParam String password, @RequestParam String NP,
             RedirectAttributes red) {
-        CustomUserDetails u = (CustomUserDetails) auth.getPrincipal();
-        User user = userService.findById(u.getId());
+        User user = userService.findById(auth.getId());
         if (!NP.equals(password) || NP.isEmpty() || password.isEmpty()) {
             red.addFlashAttribute("error", "Passwords do not match");
             return "redirect:/profile";
@@ -301,7 +313,7 @@ public class AuthController {
         if (user != null) {
             user.setPassword(passwordEncoder.encode(password));
             userService.save(user);
-            auditService.record("reset_password", "user id=" + user.getId() + "Reset password");
+            auditService.record("RESET_PASSWORD", "SUCCESS", "user " + auth.getEmail() + " Reset their password");
             red.addFlashAttribute("message", "Password reset successful");
             return "redirect:/profile";
         } else {

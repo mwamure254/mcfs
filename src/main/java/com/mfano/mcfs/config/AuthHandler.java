@@ -42,6 +42,9 @@ public class AuthHandler implements AuthenticationSuccessHandler,
         // log activity info
         if (authentication != null &&
                 authentication.getPrincipal() instanceof CustomUserDetails user) {
+            auditService.record(
+                "USER_LOGIN", "SUCCESS",
+                "User " + user.getEmail() + " logged in successfully.");
             response.sendRedirect("/");
             return;
         }else{
@@ -54,6 +57,10 @@ public class AuthHandler implements AuthenticationSuccessHandler,
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException exception) throws IOException {
+
+        auditService.record(
+                "USER_LOGIN", "FAIL", 
+                "User login failure");
 
         if (exception instanceof DisabledException) {
             message = "Your account is disabled";
@@ -88,7 +95,7 @@ public class AuthHandler implements AuthenticationSuccessHandler,
                 authentication.getPrincipal() instanceof CustomUserDetails user) {
 
             auditService.record(
-                    "USER_LOGOUT",
+                    "USER_LOGOUT", "SUCCESS", 
                     "User " + user.getUsername() + " logged out");
         }
     }

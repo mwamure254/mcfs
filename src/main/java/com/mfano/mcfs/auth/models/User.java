@@ -41,7 +41,7 @@ public class User extends BaseObject {
 
     private String password;
     @Column(nullable = false)
-    private boolean enabled = false;
+    private boolean enabled = true;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "branch_id")

@@ -57,6 +57,7 @@ public class AdminController {
     @GetMapping("/{option}")
     public String getAll(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option, Model red) {
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
+        red.addAttribute("user", userService.findById(auth.getId()));
 
         String dir = "redirect";
         switch (option) {
@@ -123,7 +124,7 @@ public class AdminController {
             RedirectAttributes redirectAttributes){
 
         userService.update(id, userDto);
-        auditService.record("UPDATE_USER", auth.getEmail() + " Updated user: " + userDto.getEmail());
+        auditService.record("UPDATE_USER", "SUCCESS", auth.getEmail() + " Updated user: " + userDto.getEmail());
         redirectAttributes.addFlashAttribute(
                 "message",
                 "User updated successfully."
@@ -133,13 +134,13 @@ public class AdminController {
     }
     //Role update
     @PostMapping("/roles/update/{id}")
-    public String updateRole(
+    public String updateRole(@AuthenticationPrincipal CustomUserDetails auth,
             @PathVariable Long id,
             @Valid Role role,
             RedirectAttributes redirectAttributes){
 
         roleService.update(id, role);
-
+        auditService.record("UPDATE_ROLE", "SUCCESS", auth.getEmail() + " Updated role: " + role.getName());
         redirectAttributes.addFlashAttribute(
                 "message",
                 "Role updated successfully."
@@ -149,13 +150,13 @@ public class AdminController {
     }
     //Type update
     @PostMapping("/types/update/{id}")
-    public String updateType(
+    public String updateType(@AuthenticationPrincipal CustomUserDetails auth,
             @PathVariable Long id,
             @Valid DocumentType dote,
             RedirectAttributes redirectAttributes){
 
         typeService.update(id, dote);
-
+        auditService.record("UPDATE_TYPE", "SUCCESS", auth.getEmail() + " Updated type: " + dote.getName());
         redirectAttributes.addFlashAttribute(
                 "message",
                 "Type updated successfully."
@@ -165,13 +166,13 @@ public class AdminController {
     }
     //Status update
     @PostMapping("/statuses/update/{id}")
-    public String updateRole(
+    public String updateRole(@AuthenticationPrincipal CustomUserDetails auth,
             @PathVariable Long id,
             @Valid DocumentStatus dosa,
             RedirectAttributes redirectAttributes){
 
         statusService.update(id, dosa);
-
+        auditService.record("UPDATE_STATUS", "SUCCESS", auth.getEmail() + " Updated status: " + dosa.getName());
         redirectAttributes.addFlashAttribute(
                 "message",
                 "Status updated successfully."
@@ -181,13 +182,13 @@ public class AdminController {
     }
     //Class update
     @PostMapping("/classes/update/{id}")
-    public String updateRole(
+    public String updateRole(@AuthenticationPrincipal CustomUserDetails auth,
             @PathVariable Long id,
             @Valid DocumentClass doca,
             RedirectAttributes redirectAttributes){
 
         classService.update(id, doca);
-
+        auditService.record("UPDATE_CLASS", "SUCCESS", auth.getEmail() + " Updated class: " + doca.getName());
         redirectAttributes.addFlashAttribute(
                 "message",
                 "Class updated successfully."
@@ -210,6 +211,7 @@ public class AdminController {
             case "profile":
                 // Add user info to model (for Thymeleaf dashboard pages)
                 model.addAttribute("profile", profileService.checkProfile(auth.getId()));
+                model.addAttribute("user", userService.findById(auth.getId()));
                 model.addAttribute("profile1", profileService.checkProfile(user.getId()));
                 dir = "admin/user-profile";
                 break;
@@ -218,7 +220,7 @@ public class AdminController {
             case "resend":
                 if (user != null && !user.isEnabled()) {
                     userService.createAndSendToken(user);
-                    auditService.record("RESEND_VERIFICATION", auth.getEmail() + " Resent token to user id=" + id);
+                    auditService.record("RESEND_VERIFICATION", "SUCCESS", auth.getEmail() + " Resent token to user id=" + id);
                     red.addFlashAttribute("message", "Link resent to user");
                     dir = "redirect:/admin/users";
                 }
@@ -240,7 +242,7 @@ public class AdminController {
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
 
         profileService.update(userid, profile);
-        auditService.record("UPDATE_PROFILE", auth.getEmail() + " Updated the profile of user id=" + userid);
+        auditService.record("UPDATE_PROFILE", "SUCCESS", auth.getEmail() + " Updated the profile of user id=" + userid);
         red.addFlashAttribute("message", "Profile updated successfully");
         return "redirect:/admin/profile/{userid}";
     }
@@ -253,7 +255,7 @@ public class AdminController {
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
         try {
             profileService.updateProfileImage(userid, file, red);
-            auditService.record("UPDATE_IMAGE", auth.getEmail() + " Updated the profile image  of user id=" + userid);
+            auditService.record("UPDATE_IMAGE", "SUCCESS", auth.getEmail() + " Updated the profile image  of user id=" + userid);
             red.addFlashAttribute("message", "Image updated successfully");
         } catch (IOException e) {
             red.addFlashAttribute("error", e.getMessage());
@@ -270,7 +272,7 @@ public class AdminController {
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
         try {
             profileService.deleteProfileImage(userid, red);
-            auditService.record("DELETE_IMAGE", auth.getEmail() + " Deleted the profile image of user id=" + userid);
+            auditService.record("DELETE_IMAGE", "SUCCESS", auth.getEmail() + " Deleted the profile image of user id=" + userid);
             red.addFlashAttribute("message", "Image deleted successfully");
         } catch (IOException e) {
             red.addFlashAttribute("error", e.getMessage());
@@ -307,10 +309,9 @@ public class AdminController {
                     }
 
                     userService.assignRoleToUser(userId, roleId);
-                    auditService.record("ASSIGN_ROLE", auth.getEmail() + " Assigned user id=" + userId + " role id=" + roleId);
-
+                    auditService.record("ASSIGN_ROLE", "SUCCESS", auth.getEmail() + " Assigned user id=" + userId + " role id=" + roleId);
                     red.addFlashAttribute(
-                        "success",
+                        "message",
                         "Role '" + role.getName() + "' assigned successfully."
                     );
 
@@ -326,8 +327,8 @@ public class AdminController {
 
             case "remove":
                 userService.removeRoleFromUser(userId, roleId);
-                auditService.record("REMOVE_ROLE", auth.getEmail() + " Revoked role id=" + roleId + " from user id=" + userId);
-                red.addFlashAttribute("message", "Action successful");
+                auditService.record("REMOVE_ROLE", "SUCCESS", auth.getEmail() + " Revoked role id=" + roleId + " from user id=" + userId);
+                red.addFlashAttribute("message", "Role removed successful");
                 break;
 
             default:
@@ -343,9 +344,10 @@ public class AdminController {
     public String saveRole(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute Role role, RedirectAttributes red) {
         try {
             roleService.save(role);
-            auditService.record("CREATE_ROLE", auth.getEmail() + " Created role: " + role.getName());
-            red.addFlashAttribute("message", "Role created successfully!");
+            auditService.record("CREATE_ROLE", "SUCCESS", auth.getEmail() + " Created role: " + role.getName());
+            red.addFlashAttribute("message", "Role created successfully");
         } catch (Exception e) {
+            auditService.record("CREATE_ROLE", "FAIL", auth.getEmail() + " Fail to created role: " + role.getName());
             red.addAttribute("error", e.getMessage());
         }
         return "redirect:/admin/roles";
@@ -356,15 +358,11 @@ public class AdminController {
         @ModelAttribute UserDto userDto, RedirectAttributes red) {
         try {
             userService.registerUser(userDto);
-            auditService.record("CREATE_USER", auth.getEmail() + " Created user: " + userDto.getEmail());
+            auditService.record("CREATE_USER", "SUCCESS", auth.getEmail() + " Created user: " + userDto.getEmail());
             red.addFlashAttribute("message", "User created successfully!");
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
+                    auditService.record("CREATE_USER", "FAIL", auth.getEmail() + " Fail to create user: " + userDto.getEmail());
                     red.addFlashAttribute("error", e.getMessage());
-                } catch (Exception e) {
-                    red.addFlashAttribute(
-                        "error",
-                        "Unable to create user."
-                    );
                 }
         return "redirect:/admin/users";
     }
@@ -373,9 +371,10 @@ public class AdminController {
     public String saveType(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute DocumentType dote, RedirectAttributes red) {
         try {
             typeService.save(dote);
-            auditService.record("CREATE_TYPE", auth.getEmail() + " Created type: " + dote.getName());
+            auditService.record("CREATE_TYPE", "SUCCESS", auth.getEmail() + " Created type: " + dote.getName());
             red.addFlashAttribute("message", "Type created successfully!");
         } catch (Exception e) {
+            auditService.record("CREATE_TYPE", "FAIL", auth.getEmail() + " Fail to create type: " + dote.getName());
             red.addAttribute("error", e.getMessage());
         }
         return "redirect:/admin/types";
@@ -384,9 +383,10 @@ public class AdminController {
     public String saveClass(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute DocumentClass doca, RedirectAttributes red) {
         try {
             classService.save(doca);
-            auditService.record("CREATE_CLASS", auth.getEmail() + " Created class: " + doca.getName());
+            auditService.record("CREATE_CLASS", "SUCCESS", auth.getEmail() + " Created class: " + doca.getName());
             red.addFlashAttribute("message", "Class created successfully!");
         } catch (Exception e) {
+            auditService.record("CREATE_CLASS", "FAIL", auth.getEmail() + " Fail to create class: " + doca.getName());
             red.addAttribute("error", e.getMessage());
         }
         return "redirect:/admin/classes";
@@ -395,9 +395,10 @@ public class AdminController {
     public String saveStatus(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute DocumentStatus dosa, RedirectAttributes red) {
         try {
             statusService.save(dosa);
-            auditService.record("CREATE_STATUS", auth.getEmail() + " Created status: " + dosa.getName());
+            auditService.record("CREATE_STATUS", "SUCCESS", auth.getEmail() + " Created status: " + dosa.getName());
             red.addFlashAttribute("message", "Status created successfully!");
         } catch (Exception e) {
+            auditService.record("CREATE_STATUS", "FAIL", auth.getEmail() + " Fail to create status " + dosa.getName());
             red.addAttribute("error", e.getMessage());
         }
         return "redirect:/admin/status";
@@ -409,6 +410,7 @@ public class AdminController {
          @PathVariable String option, @PathVariable Long id, Model model) {
 
         model.addAttribute("profile", profileService.checkProfile(auth.getId()));
+        model.addAttribute("user", userService.findById(auth.getId()));
         String dir = "redirect";
         switch (option) {
 
@@ -475,16 +477,15 @@ public class AdminController {
 
             // Toggle class
             case "classes":
+                DocumentClass doca = classService.findById(id);
                 try {
                 classService.toggleActive(id);
-                auditService.record("TOGGLE_CLASS", auth.getEmail() + " Toggled class id=" + id);
-                red.addFlashAttribute(
-                    "message",
-                    "Class toggled successfully."
-                 );
+                auditService.record("TOGGLE_CLASS", "SUCCESS", auth.getEmail() + " Toggled class id=" + doca.getName());
+                red.addFlashAttribute("message", "Class toggled successfully.");
                 dir = "redirect:/admin/classes";
                     
                 } catch (Exception e) {
+                    auditService.record("TOGGLE_STATUS", "FAIL", auth.getEmail() + " Fail to toggle class id=" + doca.getName());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle status");
                     dir = "redirect:/admin/statuses";
                 }
@@ -492,16 +493,15 @@ public class AdminController {
 
             // Toggle status
             case "statuses":
+                DocumentStatus dosa = statusService.findById(id);
                 try {
                 statusService.toggleActive(id);
-                auditService.record("TOGGLE_STATUS", auth.getEmail() + " Toggled status id=" + id);
-                red.addFlashAttribute(
-                    "message",
-                    "Status toggled successfully."
-                );
+                auditService.record("TOGGLE_STATUS", "SUCCESS", auth.getEmail() + " Toggled status id=" + dosa.getName());
+                red.addFlashAttribute("message", "Status toggled successfully.");
                 dir = "redirect:/admin/statuses";
                     
                 } catch (Exception e) {
+                    auditService.record("TOGGLE_STATUS", "FAIL", auth.getEmail() + " Fail to toggle status id=" + dosa.getName());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle status");
                     dir = "redirect:/admin/statuses";
                 }
@@ -509,16 +509,15 @@ public class AdminController {
 
             // Toggle type
             case "types":
+                DocumentType dote = typeService.findById(id);
                 try {
                 typeService.toggleActive(id);
-                auditService.record("TOGGLE_TYPE", auth.getEmail() + " toggled type id=" + id);
-                red.addFlashAttribute(
-                    "message",
-                    "Type toggled successfully."
-                );
+                auditService.record("TOGGLE_TYPE", "SUCCESS", auth.getEmail() + " toggled type id=" + dote.getName());
+                red.addFlashAttribute("message", "Type toggled successfully.");
                 dir = "redirect:/admin/types";
                     
                 } catch (Exception e) {
+                    auditService.record("TOGGLE_TYPE", "FAIL", auth.getEmail() + " Fail to toggle type id=" + dote.getName());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle type");
                     dir = "redirect:/admin/types";
                 }
@@ -526,16 +525,15 @@ public class AdminController {
 
             // Toggle role
             case "roles":
+                Role role = roleService.findById(id);
                 try {
                 roleService.toggleActive(id);
-                auditService.record("TOGGLE_ROLE", auth.getEmail() + " toggled role id=" + id);
-                red.addFlashAttribute(
-                    "message",
-                    "Role toggled successfully."
-                );
+                auditService.record("TOGGLE_ROLE", "SUCCESS", auth.getEmail() + " toggled role id=" + role.getName());
+                red.addFlashAttribute("message", "Role toggled successfully.");
                 dir = "redirect:/admin/roles";
                     
                 } catch (Exception e) {
+                    auditService.record("ROLE", "FAIL", auth.getEmail() + " Fail to toggle role: " + role.getName() + " to enabled=" + role.isActive());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle role");
                     dir = "redirect:/admin/roles";
                 }
@@ -546,11 +544,12 @@ public class AdminController {
                 User user = userService.findById(id);
                 try {
                     userService.toggleActive(id);
-                    auditService.record("TOGGLE_USER",auth.getEmail() + " Toggled user: " + user.getEmail() + " to enabled=" + user.isEnabled());
+                    auditService.record("TOGGLE_USER", "SUCCESS", auth.getEmail() + " Toggled user: " + user.getEmail() + " to enabled=" + user.isEnabled());
                     red.addFlashAttribute("message", "Toggled user successfully");
                     dir = "redirect:/admin/users";
                     
                 } catch (Exception e) {
+                    auditService.record("TOGGLE_USER", "FAIL", auth.getEmail() + " Fail to toggle user: " + user.getEmail() + " to enabled=" + user.isEnabled());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle user");
                     dir = "redirect:/admin/users";
                 }
@@ -571,14 +570,12 @@ public class AdminController {
             case "roles":
                 try {
                 roleService.delete(id);
-                auditService.record("DELETE_ROLE", auth.getEmail() + " Deleted role id=" + id);
-                red.addFlashAttribute(
-                    "message",
-                    "Role deleted successfully."
-                 );
+                auditService.record("DELETE_ROLE", "SUCCESS", auth.getEmail() + " Deleted role id=" + id);
+                red.addFlashAttribute( "message", "Role deleted successfully.");
                 dir = "redirect:/admin/roles";
                     
                 } catch (Exception e) {
+                    auditService.record("DELETE_ROLE", "FAIL", auth.getEmail() + " Fail to delete role id=" + id);
                     red.addFlashAttribute("error", "Sorry! Failed to delete role.");
                     dir = "redirect:/admin/roles";
                 }
@@ -588,11 +585,12 @@ public class AdminController {
             case "classes":
                 try {
                     classService.delete(id);
-                    auditService.record("DELETE_CLASS", auth.getEmail() + " Deleted class id=" + id);
+                    auditService.record("DELETE_CLASS", "SUCCESS", auth.getEmail() + " Deleted class id=" + id);
                     red.addFlashAttribute("message", "Class successfully deleted.");
                     dir = "redirect:/admin/classes";
                     
                 } catch (Exception e) {
+                    auditService.record("DELETE_CLASS", "FAIL", auth.getEmail() + " Fail to delete class id=" + id);
                     red.addFlashAttribute("error", "Sorry! Failed to delete class.");
                     dir = "redirect:/admin/classes";
                 }
@@ -602,10 +600,11 @@ public class AdminController {
             case "types":
                 try {
                     typeService.delete(id);
-                    auditService.record("DELETE_TYPE", auth.getEmail() + " Deleted type id=" + id);
+                    auditService.record("DELETE_TYPE", "SUCCESS", auth.getEmail() + " Deleted type id=" + id);
                     red.addFlashAttribute("message", "Type successfully deleted.");
                     dir = "redirect:/admin/types";
                 } catch (Exception e) {
+                    auditService.record("DELETE_TYPE", "FAIL", auth.getEmail() + " Fail to delete type id=" + id);
                     red.addFlashAttribute("error", "Sorry! Failed to delete user");
                     dir = "redirect:/admin/types";
                 }
@@ -615,10 +614,11 @@ public class AdminController {
             case "statuses":
                 try {
                     statusService.delete(id);
-                    auditService.record("DELETE_STATUS", auth.getEmail() + " Deleted status id=" + id);
+                    auditService.record("DELETE_STATUS", "SUCCESS", auth.getEmail() + " Deleted status id=" + id);
                     red.addFlashAttribute("message", "Status successfully deleted");
                     dir = "redirect:/admin/statuses";
                 } catch (Exception e) {
+                    auditService.record("DELETE_STATUS", "FAIL", auth.getEmail() + " Fail to delete status id=" + id);
                     red.addFlashAttribute("error", "Sorry! Failed to delete status");
                     dir = "redirect:/admin/statuses";
                 }
@@ -628,10 +628,11 @@ public class AdminController {
             case "users":
                 try {
                     userService.deleteById(id);
-                    auditService.record("DELETE_USER", auth.getEmail() + " Deleted user id=" + id);
+                    auditService.record("DELETE_USER", "SUCCESS", auth.getEmail() + " Deleted user id=" + id);
                     red.addFlashAttribute("message", "user successfully deleted");
                     dir = "redirect:/admin/users";
                 } catch (Exception e) {
+                    auditService.record("DELETE_USER", "FAIL", auth.getEmail() + " Fail to delete user id=" + id);
                     red.addFlashAttribute("error", "Sorry! Failed to delete user");
                     dir = "redirect:/admin/users";
                 }

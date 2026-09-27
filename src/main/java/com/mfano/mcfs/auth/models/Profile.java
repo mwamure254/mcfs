@@ -22,12 +22,13 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Profile extends BaseObject{
     // personal
-    private String about;
+    private String abouts;
     private String fin;
     private String lan;
     private String other;
     private String SN;
     private String phone;
+    private String email;
     // TSC or PF Number
     private String image;
     private String gender;
@@ -42,8 +43,7 @@ public class Profile extends BaseObject{
     private String instagram;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userid", nullable = true, insertable=false, updatable=false)
+    @JoinColumn(name = "user_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
-    private Long userid;
 }

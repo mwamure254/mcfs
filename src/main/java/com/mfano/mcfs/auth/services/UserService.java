@@ -66,7 +66,7 @@ public class UserService {
         user.setRoles(roles);
 
         save(user);
-        createAndSendToken(user);
+        //createAndSendToken(user);
     }
 
     public User save(User user) {

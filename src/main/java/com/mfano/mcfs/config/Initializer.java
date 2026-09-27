@@ -61,7 +61,8 @@ public class Initializer implements CommandLineRunner {
                 "HRO",
                 "ACO",
                 "RMO",
-                "PMO"
+                "PMO",
+                "OTHER"
         );
 
         for (String roleName : defaultRoles) {
@@ -137,7 +138,8 @@ public class Initializer implements CommandLineRunner {
                 "MEMO",
                 "LETTER",
                 "REPORT",
-                "INVOICE"
+                "INVOICE",
+                "OTHER"
         );
 
         for (String name : documentTypes) {
@@ -161,7 +163,8 @@ public class Initializer implements CommandLineRunner {
                 "CONFIDENTIAL",
                 "RESTRICTED",
                 "PUBLIC",
-                "PRIVATE"
+                "PRIVATE",
+                "OTHER"
         );
 
         for (String name : documentClasses) {
@@ -195,7 +198,8 @@ public class Initializer implements CommandLineRunner {
                 "CLOSED",
                 "DISPOSED",
                 "RETRIEVED",
-                "FORWARDED"
+                "FORWARDED",
+                "OTHER"
         );
 
         for (String name : documentStatuses) {

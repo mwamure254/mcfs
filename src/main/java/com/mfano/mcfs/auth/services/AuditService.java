@@ -14,9 +14,10 @@ import lombok.RequiredArgsConstructor;
 public class AuditService {
      private final AuditRepository repo;
 
-    public void record(String action, String details) {
+    public void record(String action, String as, String details) {
         AuditEntry entry = new AuditEntry();
         entry.setAction(action);
+        entry.setActionType(as);
         entry.setDetails(details);
         repo.save(entry);
     }
@@ -66,7 +67,7 @@ public class AuditService {
                 .toList();
     }
 
-    public List<AuditEntry> findByActionAndCreateddBy(String action, String performedBy) {
+    public List<AuditEntry> findByActionAndCreatedBy(String action, String performedBy) {
         return repo.findAll().stream()
                 .filter(entry -> entry.getAction().equals(action) && entry.getCreatedBy().equals(performedBy))
                 .toList();
