@@ -19,7 +19,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 public class Profile extends BaseObject{
     // personal
     private String abouts;

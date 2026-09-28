@@ -20,6 +20,7 @@ import com.mfano.mcfs.auth.models.User;
 import com.mfano.mcfs.auth.services.UserService;
 import com.mfano.mcfs.auth.repositories.ProfileRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -28,7 +29,7 @@ public class ProfileService {
     private Profile profile,existing;
     private final ProfileRepository profileRepository;
     private final UserService userService;
-    private final String baseDirectory = "src/main/resources/static/images/profile/";
+    private static final String baseDirectory = "src/main/resources/static/images/profile/";
     private static final int PROFILE_SIZE = 512;
 
     // Get All Profiles
@@ -57,6 +58,7 @@ public class ProfileService {
     }
 
     // Update Profile Image
+    @Transactional
     public void updateProfileImage(Long userid, MultipartFile file, RedirectAttributes red) throws IOException {
 
         existing = findByUser_Id(userid);
@@ -100,6 +102,7 @@ public class ProfileService {
     }
 
     // Update Profile Image
+    @Transactional
     public void deleteProfileImage(Long userid, RedirectAttributes red) throws IOException {
         existing = findByUser_Id(userid);
         try {

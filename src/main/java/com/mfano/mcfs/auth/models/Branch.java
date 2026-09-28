@@ -15,9 +15,9 @@ import lombok.Setter;
 @Table(name = "branches")
 @Setter
 @Getter
-@Builder
+//@Builder
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 public class Branch extends CommonObject {
     private String location;
 

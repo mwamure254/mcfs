@@ -33,49 +33,49 @@ import com.mfano.mcfs.auth.models.User;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+//@AllArgsConstructor
+//@Builder
 public class Document extends CommonObject {
     /**
      * Unique reference number assigned to the document.
      * Example: DOC/2026/00001
      */
-    @Column(name = "reference_number", unique = true, nullable = false, length = 50)
+    @Column(name = "reference", unique = true, nullable = false, length = 50)
     private String referenceNumber;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "document_type")
-    private DocumentType dt;
+    private DocumentType dote;
 
     /**
-     * Current lifecycle status.
+     * Current lifecycle class.
      */
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "document_class")
-    private DocumentClass dc;
+    private DocumentClass doca;
      /**
      * Current lifecycle status.
      */
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "document_status")
-    private DocumentStatus ds;
+    private DocumentStatus dosa;
 
     /**
      * Date the document was registered in the system.
      */
-    @Column(name = "registered_at")
+    @Column(name = "registered")
     private LocalDateTime registeredAt;
 
     /**
      * Date the document was completed.
      */
-    @Column(name = "completed_at")
+    @Column(name = "completion")
     private LocalDateTime completedAt;
 
     /**
      * Date the document was archived.
      */
-    @Column(name = "archived_at")
+    @Column(name = "archived")
     private LocalDateTime archivedAt;
 
     /**
@@ -93,7 +93,7 @@ public class Document extends CommonObject {
     /**
      * Physical or logical file reference.
      */
-    @Column(name = "file_number", length = 100)
+    @Column(name = "filed", length = 100)
     private String fileNumber;
 
     /**
@@ -107,12 +107,6 @@ public class Document extends CommonObject {
      */
     @Column(name = "file_size")
     private Long fileSize;
-
-    /**
-     * User who last modified the document.
-     */
-    @Column(name = "updated_by", length = 100)
-    private String updatedBy;
 
     @PrePersist
     protected void onCreate() {
@@ -132,12 +126,4 @@ public class Document extends CommonObject {
     
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-          Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth != null && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
-            this.updatedBy = userDetails.getEmail();
-        }
-    }
 }

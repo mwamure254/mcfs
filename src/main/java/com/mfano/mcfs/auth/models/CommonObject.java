@@ -25,7 +25,8 @@ public abstract class CommonObject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String createdBy;
+    private String createdBy; 
+    private String updatedBy;
     @Column(nullable = false)
     private boolean active;
 
@@ -57,5 +58,10 @@ public abstract class CommonObject {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
+            this.updatedBy = userDetails.getEmail();
+        }
     }
 }

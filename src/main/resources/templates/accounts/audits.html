@@ -250,8 +250,14 @@
                                                 <!-- Created By -->
                                                 <td>
                                                     <i class="fas fa-user fa-sm text-gray-400 mr-1"></i>
-                                                    <span th:text="${a.createdBy}">
+                                                    <span th:if="${a.createdBy != null
+                                                     and !a.createdBy.isEmpty()}" class="text-muted"
+                                                        th:text="${a.createdBy}">
                                                         User
+                                                    </span>
+                                                    <span th:unless="${a.createdBy != null
+                                                         and !a.createdBy.isEmpty()}" class="text-muted">
+                                                        sys
                                                     </span>
                                                 </td>
 

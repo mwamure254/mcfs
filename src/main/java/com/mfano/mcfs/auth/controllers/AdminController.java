@@ -1,4 +1,4 @@
-package com.mfano.mcfs.controllers;
+package com.mfano.mcfs.auth.controllers;
 
 import java.io.IOException;
 import java.util.Set;

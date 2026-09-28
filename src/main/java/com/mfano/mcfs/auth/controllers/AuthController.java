@@ -39,7 +39,7 @@ public class AuthController {
 
     private final PasswordEncoder passwordEncoder;
     private String msg = "security/message";
-    private final String login = "redirect:/login?error";
+    private static final String login = "redirect:/login?error";
 
     private final AuditService auditService;
 

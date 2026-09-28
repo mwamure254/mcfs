@@ -14,7 +14,6 @@ import jakarta.persistence.PreUpdate;
 import lombok.Data;
 
 import com.mfano.mcfs.config.CustomUserDetails;
-import com.mfano.mcfs.auth.models.User;
 
 @Data
 @MappedSuperclass

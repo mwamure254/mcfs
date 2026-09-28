@@ -42,4 +42,16 @@ public class DocumentService {
     public Document findBySender(String sender) {
         return documentRepository.findBySender(sender);
     }
+
+     public List<Document> findByNameContaining(String keyword) {
+        return documentRepository.findAll().stream()
+                .filter(entry -> entry.getName() != null && entry.getName().contains(keyword))
+                .toList();
+    }
+
+    public List<Document> findByNameAndCreatedBy(String action, String performedBy) {
+        return documentRepository.findAll().stream()
+                .filter(entry -> entry.getName().equals(action) && entry.getCreatedBy().equals(performedBy))
+                .toList();
+    }
 }

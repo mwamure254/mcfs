@@ -58,9 +58,18 @@ public class AuthHandler implements AuthenticationSuccessHandler,
             HttpServletResponse response,
             AuthenticationException exception) throws IOException {
 
+        // Capture the email submitted on the login form
+        String email = request.getParameter("username");
+
+        // If your login form uses name="email", use:
+        // String email = request.getParameter("email");
+        if (email == null || email.isBlank()) {
+            email = "UNKNOWN";
+        }
+
         auditService.record(
                 "USER_LOGIN", "FAIL", 
-                "User login failure");
+                "User " + email + " failed to login.");
 
         if (exception instanceof DisabledException) {
             message = "Your account is disabled";

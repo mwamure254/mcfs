@@ -139,6 +139,8 @@ public class Initializer implements CommandLineRunner {
                 "LETTER",
                 "REPORT",
                 "INVOICE",
+                "BUDGET",
+                "PROPOSAL",
                 "OTHER"
         );
 
@@ -163,6 +165,7 @@ public class Initializer implements CommandLineRunner {
                 "CONFIDENTIAL",
                 "RESTRICTED",
                 "PUBLIC",
+                "DRAFT",
                 "PRIVATE",
                 "OTHER"
         );
@@ -186,13 +189,13 @@ public class Initializer implements CommandLineRunner {
         // Initialize Document Status
         // =========================
         List<String> documentStatuses = List.of(
-                "DRAFT",
                 "RECEIVED",
                 "PENDING",
                 "APPROVED",
                 "REJECTED",
                 "RETURNED",
                 "COMPLETED",
+                "REVIEWED",
                 "FILED",
                 "ARCHIVED",
                 "CLOSED",

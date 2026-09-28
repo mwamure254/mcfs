@@ -23,7 +23,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 public class VerificationToken extends BaseObject {
   @Column(nullable = false, unique = true)
   private String token;
