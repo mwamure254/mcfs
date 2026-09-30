@@ -2,9 +2,6 @@ package com.mfano.mcfs.auth.models;
 
 import java.util.Set;
 
-import com.mfano.mcfs.auth.models.BaseObject;
-import com.mfano.mcfs.auth.models.Branch;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,8 +10,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,9 +18,7 @@ import lombok.Setter;
 @Table(name = "users")
 @Setter
 @Getter
-//@Builder
 @NoArgsConstructor
-//@AllArgsConstructor
 public class User extends BaseObject {
     private String fin;
     private String lan;

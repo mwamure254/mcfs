@@ -44,12 +44,13 @@ public class AuthController {
     private final AuditService auditService;
 
     // guest user
+    @SuppressWarnings("null")
     @GetMapping("/")
     public String redirectAfterLogin(@AuthenticationPrincipal CustomUserDetails auth, RedirectAttributes model) {
-        if (auth == null) {
-            return "redirect:/login";
+        if(auth == null){
+            return login;
         }
-
+      
         // Extract roles
         Set<String> roles = auth.getAuthorities()
                 .stream()
@@ -95,7 +96,6 @@ public class AuthController {
             model.addFlashAttribute("error", "Please contact the system admin for role mapping.");
             return login;
         }
-
     }
 
     @GetMapping("/error/403")
@@ -211,7 +211,7 @@ public class AuthController {
     public String imageUpdate(@PathVariable Long userid, @RequestParam("image") MultipartFile file,
             RedirectAttributes red) {
         try {
-            profileService.updateProfileImage(userid, file, red);
+            profileService.uploadImage2(userid, file, red);
         } catch (IOException e) {
             red.addFlashAttribute("error", e.getMessage());
         }
@@ -225,7 +225,7 @@ public class AuthController {
     @PostMapping("/image/delete/{userid}")
     public String imageDelete(@PathVariable Long userid, RedirectAttributes red) {
         try {
-            profileService.deleteProfileImage(userid, red);
+            profileService.deleteImage1(userid, red);
         } catch (IOException e) {
             red.addFlashAttribute("error", e.getMessage());
         }

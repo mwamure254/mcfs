@@ -1,7 +1,5 @@
 package com.mfano.mcfs.auth.models;
 
-import com.mfano.mcfs.auth.models.CommonObject;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;

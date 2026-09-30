@@ -1,40 +1,28 @@
 package com.mfano.mcfs.utils.documents.models;
 
-import java.util.Optional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import com.mfano.mcfs.auth.models.CommonObject;
-import com.mfano.mcfs.config.CustomUserDetails;
-import com.mfano.mcfs.auth.models.User;
 
 @Entity
 @Table(name = "documents")
 @Getter
 @Setter
 @NoArgsConstructor
-//@AllArgsConstructor
-//@Builder
 public class Document extends CommonObject {
     /**
      * Unique reference number assigned to the document.
@@ -43,20 +31,20 @@ public class Document extends CommonObject {
     @Column(name = "reference", unique = true, nullable = false, length = 50)
     private String referenceNumber;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "document_type")
     private DocumentType dote;
 
     /**
      * Current lifecycle class.
      */
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "document_class")
     private DocumentClass doca;
      /**
      * Current lifecycle status.
      */
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "document_status")
     private DocumentStatus dosa;
 
@@ -96,17 +84,11 @@ public class Document extends CommonObject {
     @Column(name = "filed", length = 100)
     private String fileNumber;
 
-    /**
-     * MIME type of the uploaded document.
-     */
-    @Column(name = "content_type", length = 100)
-    private String contentType;
+    private String note;
+    private String fileName;
 
-    /**
-     * Size of the uploaded document in bytes.
-     */
-    @Column(name = "file_size")
     private Long fileSize;
+    private String contentType;
 
     @PrePersist
     protected void onCreate() {

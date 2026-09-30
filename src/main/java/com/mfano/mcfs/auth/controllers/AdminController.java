@@ -254,7 +254,7 @@ public class AdminController {
             @RequestParam("image") MultipartFile file, RedirectAttributes red) {
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
         try {
-            profileService.updateProfileImage(userid, file, red);
+            profileService.uploadImage2(userid, file, red);
             auditService.record("UPDATE_IMAGE", "SUCCESS", auth.getEmail() + " Updated the profile image  of user id=" + userid);
             red.addFlashAttribute("message", "Image updated successfully");
         } catch (IOException e) {
@@ -271,7 +271,7 @@ public class AdminController {
         
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
         try {
-            profileService.deleteProfileImage(userid, red);
+            profileService.deleteImage1(userid, red);
             auditService.record("DELETE_IMAGE", "SUCCESS", auth.getEmail() + " Deleted the profile image of user id=" + userid);
             red.addFlashAttribute("message", "Image deleted successfully");
         } catch (IOException e) {
@@ -485,7 +485,7 @@ public class AdminController {
                 dir = "redirect:/admin/classes";
                     
                 } catch (Exception e) {
-                    auditService.record("TOGGLE_STATUS", "FAIL", auth.getEmail() + " Fail to toggle class id=" + doca.getName());
+                    auditService.record("TOGGLE_CLASS", "FAIL", auth.getEmail() + " Fail to toggle class id=" + doca.getName());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle status");
                     dir = "redirect:/admin/statuses";
                 }
