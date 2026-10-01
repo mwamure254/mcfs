@@ -12,7 +12,6 @@ import java.util.UUID;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Positions;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,11 +28,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
-    private Profile profile,existing;
+    private Profile profile, existing;
     private final ProfileRepository profileRepository;
     private final UserService userService;
 
-     @Value("${app.upload-dir}")
+    @Value("${app.upload-dir}")
     private String uploadDir;
     private static final String baseDirectory = "src/main/resources/static/images/profile/";
 
@@ -84,23 +83,23 @@ public class ProfileService {
         }
 
     }
-    //resize image
+
+    // resize image
     public byte[] resizeProfileImage(MultipartFile file) throws IOException {
 
-            if (file == null || file.isEmpty()) {
-                throw new IllegalArgumentException("Profile image is required");
-            }
-            if (file.getSize() > 5 * 1024 * 1024) {
-                throw new IllegalArgumentException(
-                    "Profile image must not exceed 5 MB"
-                );
-            }
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Profile image is required");
+        }
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException(
+                    "Profile image must not exceed 5 MB");
+        }
 
-            try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-                Thumbnails.of(file.getInputStream())
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            Thumbnails.of(file.getInputStream())
                     .size(PROFILE_SIZE, PROFILE_SIZE)
                     .crop(Positions.CENTER)
-                    .outputFormat("jpg")//webp
+                    .outputFormat("jpg")// webp
                     .outputQuality(0.85)
                     .toOutputStream(output);
 
@@ -114,7 +113,9 @@ public class ProfileService {
         existing = findByUser_Id(userid);
         try {
             String image = existing.getImage();
-            Path path = Path.of(uploadDir + "/images/profile/" + image);
+            Path path = Paths.get(uploadDir, "images/profile", image)
+                    .toAbsolutePath()
+                    .normalize();
             Files.delete(path);
 
             existing.setImage(null);
@@ -160,11 +161,11 @@ public class ProfileService {
             profile.setUser(user);
             save(profile);
 
-        } 
+        }
         return profile;
     }
 
-    ///uploads2
+    /// uploads2
     @Transactional
     public void uploadImage2(Long userId, MultipartFile file, RedirectAttributes red) throws IOException {
         existing = findByUser_Id(userId);
@@ -253,7 +254,7 @@ public class ProfileService {
 
     @Transactional
     public void updateImage(Long userId, MultipartFile file,
-         RedirectAttributes red) throws IOException {
+            RedirectAttributes red) throws IOException {
         existing = findByUser_Id(userId);
 
         String oldImage = profile.getImage();

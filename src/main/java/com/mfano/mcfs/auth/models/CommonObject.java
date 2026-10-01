@@ -49,7 +49,6 @@ public abstract class CommonObject {
         this.active = true;
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
         if (auth != null && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
             this.createdBy = userDetails.getEmail();
         }

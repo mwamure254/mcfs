@@ -78,10 +78,12 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right shadow">
                                             <h6 class="dropdown-header">Export Records</h6>
-                                            <a class="dropdown-item" href="#"><i
+                                            <a class="dropdown-item" th:href="@{/records/documents/export/excel(filter=${filter})}"><i
                                                     class="fas fa-file-excel fa-sm fa-fw mr-2 text-success"></i>Excel</a>
-                                            <a class="dropdown-item" href="#"><i
+                                            <a class="dropdown-item" th:href="@{/records/documents/export/pdf(filter=${filter})}"><i
                                                     class="fas fa-file-pdf fa-sm fa-fw mr-2 text-danger"></i>PDF</a>
+                                            <a class="dropdown-item" th:href="@{/records/documents/export/word(filter=${filter})}"><i
+                                                    class="fas fa-file-word fa-sm fa-fw mr-2 text-danger"></i>WORD</a>
                                         </div>
                                     </div>
 
@@ -105,7 +107,7 @@
                                     </div>
 
                                     <!-- Add Button -->
-                                    <button type="button" class="btn btn-sm btn-primary mb-2" data-toggle="modal"
+                                    <button type="button" class="btn btn-sm btn-outline-primary mb-2" data-toggle="modal"
                                         data-target="#addModal">
                                         <i class="fas fa-plus-circle mr-1"></i>Add Document
                                     </button>
@@ -162,7 +164,7 @@
                                                 <td>
                                                     <div class="btn-group" role="group">
                                                         <a class="btn btn-sm btn-outline-primary"
-                                                            th:href="@{/records/manage/document/{id}(id=${a.id})}"
+                                                            th:href="@{/records/documents/edit/{id}(id=${a.id})}"
                                                             title="Edit">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
@@ -295,7 +297,7 @@
                             <div class="form-group col-md-4">
                                 <label>Document Type</label>
                                 <select class="form-control" name="dote">
-                                    <option value="">SELECT</option>
+                                    <option value="" selected disabled>SELECT</option>
                                     <option th:each="dote : ${types}" th:value="${dote.id}" th:text="${dote.name}">
                                     </option>
                                 </select>
@@ -303,7 +305,7 @@
                             <div class="form-group col-md-4">
                                 <label>Document Class</label>
                                 <select class="form-control" name="doca">
-                                    <option value="">SELECT</option>
+                                    <option value="" selected disabled>SELECT</option>
                                     <option th:each="doca : ${classes}" th:value="${doca.id}" th:text="${doca.name}">
                                     </option>
                                 </select>
@@ -311,7 +313,7 @@
                             <div class="form-group col-md-4">
                                 <label>Status</label>
                                 <select class="form-control" name="dosa">
-                                    <option value="">SELECT</option>
+                                    <option value="" selected disabled>SELECT</option>
                                     <option th:each="dosa : ${statuses}" th:value="${dosa.id}" th:text="${dosa.name}">
                                     </option>
                                 </select>
@@ -331,7 +333,7 @@
                         </div>
                         <div class="form-group">
                             <label>Description</label>
-                            <textarea class="form-control" name="note" rows="3" placeholder="Description"></textarea>
+                            <textarea class="form-control" name="description" rows="3" placeholder="Description"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Select File</label>

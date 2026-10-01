@@ -1,6 +1,20 @@
 package com.mfano.mcfs.records;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Element;
+
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +46,7 @@ import com.mfano.mcfs.utils.documents.services.DocumentClassService;
 import com.mfano.mcfs.utils.documents.services.DocumentStatusService;
 import com.mfano.mcfs.utils.documents.services.DocumentTypeService;
 import com.mfano.mcfs.utils.documents.services.DocumentService;
-import com.mfano.mcfs.utils.documents.models.Document;
+import com.mfano.mcfs.utils.documents.models.Documents;
 import com.mfano.mcfs.utils.documents.models.DocumentClass;
 
 import lombok.RequiredArgsConstructor;
@@ -56,7 +70,8 @@ public class RecordsController {
 
     // manage /GET/* module
     @GetMapping("/{option}")
-    public String getAll(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option, Model red) {
+    public String getAll(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option, Model red,
+            @RequestParam(required = false, defaultValue = "all") String filter) {
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
         red.addAttribute("user", userService.findById(auth.getId()));
 
@@ -93,7 +108,17 @@ public class RecordsController {
                 break;
 
             case "documents":
-                red.addAttribute("documents", documentService.findAll());
+
+                List<Documents> documents;
+                switch (filter) {
+                    case "today" -> documents = documentService.findToday();
+                    case "month" -> documents = documentService.findThisMonth();
+                    case "year" -> documents = documentService.findThisYear();
+                    default -> documents = documentService.findAll();
+                }
+
+                red.addAttribute("filter", filter);
+                red.addAttribute("documents", documents);
                 red.addAttribute("types", typeService.findAll());
                 red.addAttribute("statuses", statusService.findAll());
                 red.addAttribute("classes", classService.findAll());
@@ -124,9 +149,9 @@ public class RecordsController {
     // Document saving
     @PostMapping("/documents/save")
     public String saveDocument(@AuthenticationPrincipal CustomUserDetails auth,
-            @RequestParam("file") MultipartFile file, @ModelAttribute Document doc, RedirectAttributes red) {
+            @RequestParam("file") MultipartFile file, @ModelAttribute Documents doc, RedirectAttributes red) {
         try {
-            documentService.save(file, doc);
+            documentService.save(file, doc, auth);
             auditService.record("CREATE_DOCUMENT", "SUCCESS", auth.getEmail() + " Recorded document: " + doc.getName());
             red.addFlashAttribute("message", "Document recorded successfully");
         } catch (Exception e) {
@@ -137,14 +162,34 @@ public class RecordsController {
         return "redirect:/records/documents";
     }
 
+    // Document updating
+    @PostMapping("/documents/update/{id}")
+    public String updateDocument(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable Long id,
+            @RequestParam("file") MultipartFile file, @ModelAttribute Documents doc, RedirectAttributes red) {
+
+        if (doc == null) {
+            red.addFlashAttribute("error", "Document not found.");
+            return "redirect:/records/documents";
+        }
+        try {
+            documentService.update(file, doc, auth, id);
+            auditService.record("UPDATE_DOCUMENT", "SUCCESS", auth.getEmail() + " Updated document: " + doc.getName());
+            red.addFlashAttribute("message", "Document updated successfully");
+        } catch (Exception e) {
+            auditService.record("UPDATE_DOCUMENT", "FAIL",
+                    auth.getEmail() + " Failed to update document: " + doc.getName());
+            red.addAttribute("error", e.getMessage());
+        }
+        return "redirect:/records/documents/edit/" + id;
+    }
+
     // Delete document
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/documents/{option}/{id}")
     public String imageDelete(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option,
             @PathVariable Long id, RedirectAttributes red) {
 
-        Document doc = documentService.findById(id);
-        String dir = "redirect";
+        Documents doc = documentService.findById(id);
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
         switch (option) {
 
@@ -152,11 +197,12 @@ public class RecordsController {
             case "delete":
                 try {
                     documentService.deleteDocument(id, red);
-                    auditService.record("DELETE_DOCUMENT", "SUCCESS", auth.getEmail() + " Deleted document id = " + doc.getName());
+                    auditService.record("DELETE_DOCUMENT", "SUCCESS",
+                            auth.getEmail() + " Deleted document id = " + doc.getName());
                 } catch (IOException e) {
-                    auditService.record("DELETE_DOCUMENT", "FAIL", auth.getEmail() + " Failed teleted document id = " + doc.getName());
+                    auditService.record("DELETE_DOCUMENT", "FAIL",
+                            auth.getEmail() + " Failed teleted document id = " + doc.getName());
                 }
-                dir = "redirect:/records/documents";
                 break;
 
             case "toggle":
@@ -171,18 +217,16 @@ public class RecordsController {
                             auth.getEmail() + " Fail to toggle document " + doc.getName());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle document");
                 }
-                dir = "redirect:/records/documents";
-
                 break;
         }
-        return dir;
+        return "redirect:/records/documents";
     }
 
     // View document by reference
     @GetMapping("/documents/{id}")
     public ResponseEntity<Resource> openDocument(@PathVariable Long id) {
 
-        Document document = documentService.findById(id);
+        Documents document = documentService.findById(id);
         if (document == null) {
             return ResponseEntity.notFound().build();
         }
@@ -200,6 +244,34 @@ public class RecordsController {
                         HttpHeaders.CONTENT_DISPOSITION,
                         "inline; filename=\"" + document.getFileName() + "\"")
                 .body(resource);
+    }
+
+    // Edit document by reference
+    @GetMapping("/documents/edit/{id}")
+    public String editDocument(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable Long id,
+            Model model, RedirectAttributes red) {
+
+        model.addAttribute("profile", profileService.checkProfile(auth.getId()));
+        model.addAttribute("user", userService.findById(auth.getId()));
+        Documents document = documentService.findById(id);
+        if (document == null) {
+            red.addFlashAttribute("error", "Document not found.");
+            return "redirect:/records/documents";
+        }
+
+        model.addAttribute("roles", roleService.findAll());
+        model.addAttribute("types", typeService.findAll());
+        model.addAttribute("classes", classService.findAll());
+        model.addAttribute("statuses", statusService.findAll());
+        model.addAttribute("document", document);
+        return "records/document-edit";
+    }
+
+    // Export document by filter
+    @GetMapping("/documents/export/{format}")
+    public ResponseEntity<byte[]> exportDocument(@AuthenticationPrincipal CustomUserDetails auth,
+            @RequestParam(defaultValue = "all") String filter, @PathVariable String format) {
+        return documentService.exportDocuments(auth, filter, format);
     }
 
 }

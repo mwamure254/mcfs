@@ -2,14 +2,9 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <th:block th:replace="~{partials/_header :: common_header(~{::title/text()},~{::link},~{::meta})}">
-    <!-- Custom meta data for this template-->
     <meta name="description" content="mcfs edit document page">
     <meta name="author" content="mfano">
-
-    <!-- Custom title for this page-->
-    <title>MCFS | Document Edit</title>
-
-    <!-- Custom styles for this page-->
+    <title>MCFS | Edit Document</title>
 </th:block>
 
 <body id="page-top">
@@ -17,148 +12,242 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
 
-        <!-- ======= Sidebar ======= -->
+        <!-- Sidebar -->
         <th:block th:insert="~{partials/_sidebar}" />
-        <!-- =====End Sidebar=====-->
 
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
             <div id="content">
 
-                <!-- ======= Topbar ======= -->
+                <!-- Topbar -->
                 <th:block th:insert="~{partials/_topbar}" />
-                <!-- =====End Topbar=====-->
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-1 text-gray-800">Border Utilities</h1>
-                    <p class="mb-4">Bootstrap's default utility classes can be found on the official <a
-                            href="https://getbootstrap.com/docs">Bootstrap Documentation</a> page. The custom utilities
-                        below were created to extend this theme past the default utility classes built into Bootstrap's
-                        framework.</p>
-
-                    <!-- Content Row -->
-                    <div class="row">
-
-                        <!-- Border Left Utilities -->
-                        <div class="col-lg-6">
-
-                            <div class="card mb-4 py-3 border-left-primary">
-                                <div class="card-body">
-                                    .border-left-primary
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-left-secondary">
-                                <div class="card-body">
-                                    .border-left-secondary
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-left-success">
-                                <div class="card-body">
-                                    .border-left-success
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-left-info">
-                                <div class="card-body">
-                                    .border-left-info
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-left-warning">
-                                <div class="card-body">
-                                    .border-left-warning
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-left-danger">
-                                <div class="card-body">
-                                    .border-left-danger
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-left-dark">
-                                <div class="card-body">
-                                    .border-left-dark
-                                </div>
-                            </div>
-
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <div>
+                            <h1 class="h3 mb-0 text-gray-800">
+                                <i class="fas fa-edit mr-2"></i>Edit Document
+                            </h1>
+                            <p class="text-muted mb-0" th:text="'# ' + ${document.referenceNumber}"></p>
                         </div>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}"><i class="fas fa-home"></i>
+                                        Dashboard</a></li>
+                                <li class="breadcrumb-item"><a th:href="@{/records/documents}">Documents</a></li>
+                                <li class="breadcrumb-item active">Edit</li>
+                            </ol>
+                        </nav>
+                    </div>
 
-                        <!-- Border Bottom Utilities -->
-                        <div class="col-lg-6">
-
-                            <div class="card mb-4 py-3 border-bottom-primary">
-                                <div class="card-body">
-                                    .border-bottom-primary
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-bottom-secondary">
-                                <div class="card-body">
-                                    .border-bottom-secondary
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-bottom-success">
-                                <div class="card-body">
-                                    .border-bottom-success
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-bottom-info">
-                                <div class="card-body">
-                                    .border-bottom-info
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-bottom-warning">
-                                <div class="card-body">
-                                    .border-bottom-warning
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-bottom-danger">
-                                <div class="card-body">
-                                    .border-bottom-danger
-                                </div>
-                            </div>
-
-                            <div class="card mb-4 py-3 border-bottom-dark">
-                                <div class="card-body">
-                                    .border-bottom-dark
-                                </div>
-                            </div>
-
+                    <!-- Edit Card -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-file-alt mr-2"></i>Document Information
+                            </h6>
                         </div>
+                        <div class="card-body">
+                            <form th:action="@{/records/documents/update/{id}(id=${document.id})}" method="post"
+                                th:object="${document}" enctype="multipart/form-data">
+                                <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
 
+                                <!-- Tabs -->
+                                <ul class="nav nav-tabs" id="docTab" role="tablist">
+                                    <li class="nav-item"><a class="nav-link active" data-toggle="tab"
+                                            href="#details">Details</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#dates">Dates</a>
+                                    </li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#file">File
+                                            Info</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#audit">Audit</a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content pt-4">
+                                    <!-- DETAILS TAB -->
+                                    <div class="tab-pane fade show active" id="details">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label>Document Name <span class="text-danger">*</span></label>
+                                                <input th:field="*{name}" type="text" class="form-control" required>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label>File Number</label>
+                                                <input th:field="*{fileNumber}" type="text" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <label>Type</label>
+                                                <select th:field="*{dote}" class="form-control">
+                                                    <option value="" disabled>SELECT</option>
+                                                    <option th:each="t : ${types}" th:value="${t.id}"
+                                                        th:text="${t.name}"></option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label>Class</label>
+                                                <select th:field="*{doca}" class="form-control">
+                                                    <option value="" disabled>SELECT</option>
+                                                    <option th:each="c : ${classes}" th:value="${c.id}"
+                                                        th:text="${c.name}"></option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label>Status</label>
+                                                <select th:field="*{dosa}" class="form-control">
+                                                    <option value="" disabled>SELECT</option>
+                                                    <option th:each="s : ${statuses}" th:value="${s.id}"
+                                                        th:text="${s.name}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label>Sender</label>
+                                                <input th:field="*{sender}" type="text" class="form-control"
+                                                    placeholder="Person/Department">
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label>Recipient</label>
+                                                <input th:field="*{recipient}" type="text" class="form-control"
+                                                    placeholder="Person/Department">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Description</label>
+                                            <textarea class="form-control" th:field="*{description}" rows="3"
+                                                placeholder="Description of the document"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" th:field="*{active}" class="custom-control-input"
+                                                    id="activeSwitch">
+                                                <label class="custom-control-label" for="activeSwitch">Active</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- DATES TAB -->
+                                    <div class="tab-pane fade" id="dates">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <label>Registered At</label>
+                                                <input th:field="*{registeredAt}" type="text" class="form-control">
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label>Completed At</label>
+                                                <input th:field="*{completedAt}" type="text" class="form-control">
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label>Archived At</label>
+                                                <input th:field="*{archivedAt}" type="text" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- FILE INFO TAB -->
+                                    <div class="tab-pane fade" id="file">
+                                        <div class="alert alert-info" th:if="${document.fileName}">
+                                            <i class="fas fa-file mr-2"></i>Current File:
+                                            <strong th:text="${document.fileName}"></strong>
+                                            <span class="badge badge-secondary ml-2"
+                                                th:text="${#numbers.formatDecimal(document.fileSize / 1024, 1, 2)} + ' KB'"></span>
+                                            <span class="badge badge-info ml-1"
+                                                th:text="${document.contentType}"></span>
+                                            <a th:href="@{/records/documents/{ref}(ref=${document.id})}" target="_blank"
+                                                rel="noopener noreferrer" class="btn btn-sm btn-outline-primary ml-3"><i
+                                                    class="fas fa-download"></i> Download</a>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Replace File</label>
+                                            <input type="file" name="file" class="form-control-file"
+                                                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png">
+                                            <small class="form-text text-muted">Leave empty to keep current file</small>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label>File Name</label>
+                                                <input th:field="*{fileName}" type="text" class="form-control" readonly>
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label>File Size (bytes)</label>
+                                                <input th:field="*{fileSize}" type="number" class="form-control"
+                                                    readonly>
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label>Content Type</label>
+                                                <input th:field="*{contentType}" type="text" class="form-control"
+                                                    readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- AUDIT TAB -->
+                                    <div class="tab-pane fade" id="audit">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label>Created By</label>
+                                                <input th:field="*{createdBy}" type="text" class="form-control"
+                                                    readonly>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label>Created At</label>
+                                                <input th:field="*{createdAt}" type="text" class="form-control"
+                                                    readonly>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label>Updated By</label>
+                                                <input th:field="*{updatedBy}" type="text" class="form-control"
+                                                    readonly>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label>Updated At</label>
+                                                <input th:field="*{updatedAt}" type="text" class="form-control"
+                                                    readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr>
+                                <div class="text-right">
+                                    <a th:href="@{/records/documents}" class="btn btn-secondary"><i
+                                            class="fas fa-arrow-left mr-1"></i>Back</a>
+                                    <button type="reset" class="btn btn-warning"><i
+                                            class="fas fa-broom mr-1"></i>Reset</button>
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Update
+                                        Document</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
                 </div>
                 <!-- /.container-fluid -->
-
             </div>
             <!-- End of Main Content -->
 
-            <!-- ======= footer ======= -->
             <th:block th:insert="~{partials/_footer}" />
-            <!-- =====End footer=====-->
-
         </div>
-        <!-- End of Content Wrapper -->
-
     </div>
-    <!-- End of Page Wrapper -->
 
-    <!-- ======= scripts ======= -->
     <th:block th:insert="~{partials/_scripts}" />
-    <!-- =====End scripts=====-->
+    <script>
+        // Convert datetime for datetime-local input if needed
+        $(document).ready(function () {
+            $('input[type=datetime-local]').each(function () {
+                let val = $(this).val();
+                if (val) $(this).val(val.substring(0, 16));
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -171,6 +171,7 @@ public class UserService {
         return "valid";
     }
 
+    @SuppressWarnings("null")
     public Optional<User> getUserByPasswordResetToken(String token) {
         return tokenRepository.findByToken(token).map(VerificationToken::getUser);
     }

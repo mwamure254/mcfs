@@ -106,13 +106,13 @@
                                             <div class="col-sm-8">
                                                 <select class="form-control" name="branch" id="branch" required>
 
-                                                    <option th:value="${user.branch.id}"
-                                                        th:text="${user.branch != null ? user.branch.name : 'Select'}"
+                                                    <option value=""
+                                                        th:text="${user.branch != null ? user.branch.name : 'SELECT'}"
                                                         selected disabled>
                                                         Select
                                                     </option>
                                                     <option th:each="s : ${stores}" th:value="${s.id}"
-                                                        th:text="${s.name}" required>
+                                                        th:text="${s.name}">
                                                     </option>
                                                 </select>
                                             </div>

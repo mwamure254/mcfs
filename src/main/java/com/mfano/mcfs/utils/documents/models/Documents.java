@@ -23,7 +23,7 @@ import com.mfano.mcfs.auth.models.CommonObject;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Document extends CommonObject {
+public class Documents extends CommonObject {
     /**
      * Unique reference number assigned to the document.
      * Example: DOC/2026/00001
@@ -84,7 +84,6 @@ public class Document extends CommonObject {
     @Column(name = "filed", length = 100)
     private String fileNumber;
 
-    private String note;
     private String fileName;
 
     private Long fileSize;
