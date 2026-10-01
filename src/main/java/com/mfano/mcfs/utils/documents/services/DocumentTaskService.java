@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.mfano.mcfs.auth.models.Role;
 import com.mfano.mcfs.utils.documents.models.DocumentTask;
 import com.mfano.mcfs.utils.documents.repositories.DocumentTaskRepository;
 
@@ -31,15 +32,15 @@ public class DocumentTaskService {
     }
 
     // Update Role
-    public void save(DocumentTask role) {
-        taskRepository.save(role);
+    public void save(DocumentTask task) {
+        taskRepository.save(task);
     }
 
-    public DocumentTask findByRecipient(String name) {
-        return taskRepository.findByRecipient(name).orElse(null);
+    public DocumentTask findByRecipient(Role recipient) {
+        return taskRepository.findByRecipient(recipient).orElse(null);
     }
 
     public DocumentTask findBySender(String sender) {
-        return taskRepository.findBySender(sender);
+        return taskRepository.findByCreatedBy(sender);
     }
 }

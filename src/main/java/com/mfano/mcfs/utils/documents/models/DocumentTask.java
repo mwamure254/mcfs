@@ -1,13 +1,15 @@
 package com.mfano.mcfs.utils.documents.models;
 
-import com.mfano.mcfs.auth.models.BaseObject;
+import com.mfano.mcfs.auth.models.Branch;
+import com.mfano.mcfs.auth.models.CommonObject;
+import com.mfano.mcfs.auth.models.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
-import lombok.AllArgsConstructor;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.NoArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,18 +17,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-//@AllArgsConstructor
-//@Builder
-public class DocumentTask extends BaseObject {
-     /**
-     * Person/organization that sent the document.
+public class DocumentTask extends CommonObject {
+    String reference;
+    /* Person/organization receiving the document.
      */
-    @Column(name = "sender", length = 255)
-    private String sender;
-     /**
-     * Person/organization receiving the document.
-     */
-    @Column(name = "recipient", length = 255)
-    private String recipient;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "recipient")
+    private Role recipient; 
+    
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "dosa")
+    private DocumentStatus dosa;
 
 }

@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
+import com.mfano.mcfs.auth.models.Role;
 import com.mfano.mcfs.utils.documents.models.DocumentTask;
 
 public interface DocumentTaskRepository extends JpaRepository<DocumentTask, Long> {
-     Optional<DocumentTask> findByRecipient(String name);
-     DocumentTask findBySender(String sender);
+     Optional<DocumentTask> findByRecipient(Role recipient);
+     DocumentTask findByCreatedBy(String sender);
 }

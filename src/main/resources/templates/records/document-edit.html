@@ -35,8 +35,9 @@
                         </div>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}"><i class="fas fa-home"></i>
+                                <li class="breadcrumb-item"><a th:href="@{/}"><i class="fas fa-home"></i>
                                         Dashboard</a></li>
+                                <li class="breadcrumb-item"><a th:href="@{/}">Records</a></li>
                                 <li class="breadcrumb-item"><a th:href="@{/records/documents}">Documents</a></li>
                                 <li class="breadcrumb-item active">Edit</li>
                             </ol>
@@ -46,9 +47,21 @@
                     <!-- Edit Card -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">
-                                <i class="fas fa-file-alt mr-2"></i>Document Information
-                            </h6>
+                            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                                <div>
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-file-alt mr-2"></i>Document Information
+                                    </h6>
+                                </div>
+
+                                <div class="mt-3 mt-md-0 d-flex flex-wrap">
+                                    <!-- Add Button -->
+                                    <button type="button" class="btn btn-sm btn-outline-primary mb-2"
+                                        data-toggle="modal" data-target="#assignModal">
+                                        <i class="fas fa-plus-circle mr-1"></i>Assign User or Department for Action
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
                             <form th:action="@{/records/documents/update/{id}(id=${document.id})}" method="post"
@@ -86,7 +99,8 @@
                                                 <select th:field="*{dote}" class="form-control">
                                                     <option value="" disabled>SELECT</option>
                                                     <option th:each="t : ${types}" th:value="${t.id}"
-                                                        th:text="${t.name}"></option>
+                                                        th:text="${t.name}">
+                                                    </option>
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-4">
@@ -94,7 +108,8 @@
                                                 <select th:field="*{doca}" class="form-control">
                                                     <option value="" disabled>SELECT</option>
                                                     <option th:each="c : ${classes}" th:value="${c.id}"
-                                                        th:text="${c.name}"></option>
+                                                        th:text="${c.name}">
+                                                    </option>
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-4">
@@ -123,11 +138,18 @@
                                             <textarea class="form-control" th:field="*{description}" rows="3"
                                                 placeholder="Description of the document"></textarea>
                                         </div>
+
                                         <div class="form-group">
                                             <div class="custom-control custom-switch">
                                                 <input type="checkbox" th:field="*{active}" class="custom-control-input"
                                                     id="activeSwitch">
-                                                <label class="custom-control-label" for="activeSwitch">Active</label>
+
+                                                <label class="custom-control-label" for="activeSwitch">
+                                                    <i
+                                                        th:class="${document.active ? 'fas fa-toggle-on text-success' : 'fas fa-toggle-off text-secondary'}"></i>
+
+                                                    Active
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -137,15 +159,20 @@
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
                                                 <label>Registered At</label>
-                                                <input th:field="*{registeredAt}" type="text" class="form-control">
+                                                <p th:text="${#temporals.format(document.createdAt, 'dd MMM yyyy HH:mm')}"
+                                                    type="text" class="form-control">
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label>Completed At</label>
-                                                <input th:field="*{completedAt}" type="text" class="form-control">
+                                                <p th:text="${#temporals.format(document.completedAt, 'dd MMM yyyy HH:mm')}"
+                                                    type="text" class="form-control">
+                                                </p>
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label>Archived At</label>
-                                                <input th:field="*{archivedAt}" type="text" class="form-control">
+                                                <p th:text="${#temporals.format(document.archivedAt, 'dd MMM yyyy HH:mm')}"
+                                                    type="text" class="form-control">
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -197,8 +224,9 @@
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label>Created At</label>
-                                                <input th:field="*{createdAt}" type="text" class="form-control"
-                                                    readonly>
+                                                <p th:text="${#temporals.format(document.createdAt, 'dd MMM yyyy HH:mm')}"
+                                                    type="text" class="form-control" readonly>
+                                                </p>
                                             </div>
                                         </div>
                                         <div class="form-row">
@@ -209,8 +237,8 @@
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label>Updated At</label>
-                                                <input th:field="*{updatedAt}" type="text" class="form-control"
-                                                    readonly>
+                                                <p th:text="${#temporals.format(document.updatedAt, 'dd MMM yyyy HH:mm')}"
+                                                    type="text" class="form-control" readonly></p>
                                             </div>
                                         </div>
                                     </div>
@@ -238,16 +266,133 @@
         </div>
     </div>
 
+    <!-- ASSIGN DOCUMENT TASK MODAL -->
+    <div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+        aria-hidden="true">
+
+        <form th:action="@{/task/save}" method="post">
+            <!-- CSRF -->
+            <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+
+                    <!-- Header -->
+                    <div class="modal-header bg-primary text-white">
+                        <div>
+                            <h5 class="modal-title mb-1" id="addModalLabel">
+                                <i class="fas fa-tasks mr-2"></i>
+                                Assign Document Task
+                            </h5>
+                            <small class="opacity-75">
+                                Assign this document to a user or department for action
+                            </small>
+                        </div>
+
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="modal-body">
+
+                        <!-- Reference Number -->
+                        <div class="form-group">
+                            <label for="reference">
+                                <i class="fas fa-hashtag text-primary mr-1"></i>
+                                Reference Number
+                            </label>
+
+                            <input type="text" class="form-control" id="reference" name="reference"
+                                th:value="${document.referenceNumber}" placeholder="Enter document reference number"
+                                readonly required>
+                        </div>
+                        <!-- Task name -->
+                        <div class="form-group">
+                            <label for="taskName">
+                                <i class="fas fa-tasks text-primary mr-1"></i>
+                                Task Name
+                            </label>
+
+                            <input type="text" class="form-control" id="taskName" name="name"
+                                th:value="${document.referenceNumber}" placeholder="Enter task name" required>
+                        </div>
+
+                        <!-- Role / Assignee -->
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="role">
+                                    <i class="fas fa-user-tag text-primary mr-1"></i>
+                                    Assign To
+                                </label>
+                                <select class="form-control" id="role" name="recipient" required>
+                                    <option value="" selected disabled>
+                                        Select user or department
+                                    </option>
+
+                                    <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Document Status -->
+                            <div class="form-group col-md-6">
+                                <label for="documentStatus">
+                                    <i class="fas fa-clipboard-check text-primary mr-1"></i>
+                                    Document Status
+                                </label>
+                                <select class="form-control" id="documentStatus" name="dosa" required>
+                                    <option value="" disabled>
+                                        SELECT
+                                    </option>
+                                    <option th:each="status : ${statuses}" th:value="${status.id}"
+                                        th:text="${status.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Comment -->
+                        <div class="form-group mb-0">
+                            <label for="comment">
+                                <i class="fas fa-comment-alt text-primary mr-1"></i>
+                                Comment / Action Required
+                            </label>
+
+                            <textarea class="form-control" id="comment" name="description" rows="3" maxlength="200"
+                                placeholder="Enter instructions, comments or action required..."></textarea>
+
+                            <small class="form-text text-muted">
+                                Provide any instructions or information required for the assigned task.
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <i class="fas fa-times mr-1"></i>
+                            Cancel
+                        </button>
+
+                        <button type="reset" class="btn btn-warning">
+                            <i class="fas fa-undo mr-1"></i>
+                            Reset
+                        </button>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane mr-1"></i>
+                            Assign Task
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div><!--END ASSIGNMENT MODAL-->
+
+    <!-- Scripts -->
     <th:block th:insert="~{partials/_scripts}" />
-    <script>
-        // Convert datetime for datetime-local input if needed
-        $(document).ready(function () {
-            $('input[type=datetime-local]').each(function () {
-                let val = $(this).val();
-                if (val) $(this).val(val.substring(0, 16));
-            });
-        });
-    </script>
+
 </body>
 
 </html>

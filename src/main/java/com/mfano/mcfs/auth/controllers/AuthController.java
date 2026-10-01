@@ -21,6 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mcfs.config.CustomUserDetails;
 import com.mfano.mcfs.dtos.UserDto;
+import com.mfano.mcfs.utils.documents.models.DocumentTask;
+import com.mfano.mcfs.utils.documents.services.DocumentTaskService;
 import com.mfano.mcfs.auth.models.User;
 import com.mfano.mcfs.auth.models.Profile;
 import com.mfano.mcfs.auth.services.AuditService;
@@ -36,6 +38,7 @@ public class AuthController {
     private final UserService userService;
     private final RoleService roleService;
     private final ProfileService profileService;
+    private final DocumentTaskService taskService;
 
     private final PasswordEncoder passwordEncoder;
     private String msg = "security/message";
@@ -189,6 +192,20 @@ public class AuthController {
                     dir = "admin/logs";
                 }
                 break;
+
+            //Get tasks page
+            //@PreAuthorize("isAuthenticated()")
+            case "tasks":
+                if (auth == null) {
+                    red.addAttribute("error", "User not authenticated, login to proceed.");
+                    return login;
+                } else {
+                    model.addAttribute("profile", profileService.checkProfile(auth.getId()));
+                    model.addAttribute("user", userService.findById(auth.getId()));
+                    model.addAttribute("tasks", taskService.findAll());
+                    dir = "records/tasks";
+                }
+                break;
         }
 
         return dir;
@@ -203,6 +220,19 @@ public class AuthController {
         profileService.update(auth.getId(), profile);
         auditService.record("UPDATE_PROFILE", "SUCCESS", "User " + auth.getEmail() + " updated their profile");
         return "redirect:/profile";
+    }
+
+    // Task/update @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/task/save")
+    public String taskSave(@AuthenticationPrincipal CustomUserDetails auth,
+            @ModelAttribute DocumentTask task, RedirectAttributes red) {
+
+        taskService.save(task);
+        auditService.record("CREATE_TASK", "SUCCESS", "User " + auth.getEmail() + " created a new task");
+
+        red.addFlashAttribute("message", "Task created successfully.");
+        return "redirect:/tasks";
     }
 
     // update user image

@@ -35,9 +35,9 @@
 
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}"><i
+                                <li class="breadcrumb-item"><a th:href="@{/}"><i
                                             class="fas fa-home fa-sm mr-1"></i>Dashboard</a></li>
-                                <li class="breadcrumb-item"><a th:href="@{/records}">Records</a></li>
+                                <li class="breadcrumb-item"><a th:href="@{/}">Records</a></li>
                                 <li class="breadcrumb-item active">Documents</li>
                             </ol>
                         </nav>
@@ -64,7 +64,7 @@
                                             </span>
                                         </div>
                                         <input type="text" id="tableSearch" class="form-control"
-                                            placeholder="Search roles ..." aria-label="Search roles">
+                                            placeholder="Search documents ..." aria-label="Search documents" aria-describedby="tableSearch" />
 
                                     </div>
                                 </div>
@@ -142,7 +142,7 @@
                                                 <th><i class="fas fa-clock mr-1"></i>Time</th>
                                                 <th><i class="fas fa-paper-plane mr-1"></i>Sender</th>
                                                 <th><i class="fas fa-user-check mr-1"></i>Recipient</th>
-                                                <th width="12%"><i class="fas fa-cogs mr-1"></i>Actions</th>
+                                                <th width="15%"><i class="fas fa-cogs mr-1"></i>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -349,7 +349,7 @@
                 </div>
             </div>
         </form>
-    </div>
+    </div><!--END MODAL-->
 
     <!-- Scripts -->
     <th:block th:insert="~{partials/_scripts}" />

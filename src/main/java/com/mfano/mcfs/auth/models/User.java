@@ -25,7 +25,7 @@ public class User extends BaseObject {
 
     @Column(unique = true)
     private String email;
-    
+
     private String gender;
 
     private String password;
