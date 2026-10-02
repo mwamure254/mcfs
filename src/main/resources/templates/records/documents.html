@@ -83,7 +83,7 @@
                                             <a class="dropdown-item" th:href="@{/records/documents/export/pdf(filter=${filter})}"><i
                                                     class="fas fa-file-pdf fa-sm fa-fw mr-2 text-danger"></i>PDF</a>
                                             <a class="dropdown-item" th:href="@{/records/documents/export/word(filter=${filter})}"><i
-                                                    class="fas fa-file-word fa-sm fa-fw mr-2 text-danger"></i>WORD</a>
+                                                    class="fas fa-file-word fa-sm fa-fw mr-2 text-primary"></i>WORD</a>
                                         </div>
                                     </div>
 
@@ -168,14 +168,6 @@
                                                             title="Edit">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <form th:action="@{/records/documents/toggle/{id}(id=${a.id})}"
-                                                            method="post" class="d-inline">
-                                                            <button type="submit" class="btn btn-sm btn-outline-warning"
-                                                                th:title="${a.active ? 'Deactivate' : 'Activate'}">
-                                                                <i
-                                                                    th:class="${a.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off'}"></i>
-                                                            </button>
-                                                        </form>
                                                         <button type="button" class="btn btn-sm btn-outline-danger"
                                                             data-toggle="modal"
                                                             th:data-target="'#deleteModal' + ${a.id}" title="Delete">

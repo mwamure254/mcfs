@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.mfano.mcfs.auth.models.Branch;
+import com.mfano.mcfs.auth.models.Role;
 import com.mfano.mcfs.auth.models.User;
 
 import lombok.RequiredArgsConstructor;
@@ -16,13 +17,15 @@ import lombok.RequiredArgsConstructor;
 public class CustomUserDetails implements UserDetails {
 
     private User user;
+
     public User getUser() {
         return user;
     }
+
     public CustomUserDetails(User user) {
         this.user = user;
     }
-    
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getRoles().stream()
@@ -63,9 +66,11 @@ public class CustomUserDetails implements UserDetails {
     public String getEmail() {
         return user.getEmail();
     }
+
     public String getFin() {
         return user.getFin();
     }
+
     public String getLan() {
         return user.getLan();
     }
@@ -74,7 +79,11 @@ public class CustomUserDetails implements UserDetails {
         return user.getBranch();
     }
 
-    public Long getId() { return user.getId(); }
-    public Set<String> getRoles() { return user.getRoles().stream().map(r->r.getName()).collect(Collectors.toSet()); }
-    
+    public Long getId() {
+        return user.getId();
+    }
+
+    public Set<Role> getRoles() {
+        return user.getRoles();
+    }
 }

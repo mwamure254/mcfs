@@ -33,7 +33,7 @@ public abstract class CommonObject {
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = false, nullable = false)
     private String name;
 
     private String description;
@@ -45,7 +45,6 @@ public abstract class CommonObject {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = createdAt;
         this.active = true;
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

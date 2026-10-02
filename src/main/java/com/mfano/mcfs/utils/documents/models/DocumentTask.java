@@ -1,6 +1,5 @@
 package com.mfano.mcfs.utils.documents.models;
 
-import com.mfano.mcfs.auth.models.Branch;
 import com.mfano.mcfs.auth.models.CommonObject;
 import com.mfano.mcfs.auth.models.Role;
 
@@ -18,13 +17,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class DocumentTask extends CommonObject {
+    @Column(unique = false, nullable = false)
     String reference;
-    /* Person/organization receiving the document.
+    /*
+     * Person/organization receiving the document.
      */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "recipient")
-    private Role recipient; 
-    
+    private Role recipient;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "dosa")
     private DocumentStatus dosa;

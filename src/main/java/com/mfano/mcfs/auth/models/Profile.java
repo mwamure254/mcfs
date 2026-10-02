@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class Profile extends BaseObject{
+public class Profile extends BaseObject {
     // personal
     private String abouts;
     private String fin;
@@ -41,4 +41,20 @@ public class Profile extends BaseObject{
     @JoinColumn(name = "user_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
+    public void setLan(String lan) {
+        lan = lan.trim().toLowerCase();
+        this.lan = Character.toUpperCase(lan.charAt(0)) + lan.substring(1);
+    }
+
+    public void setFin(String fin) {
+        fin = fin.trim().toLowerCase();
+        this.lan = Character.toUpperCase(fin.charAt(0)) + fin.substring(1);
+    }
+
+    public void setAbouts(String abouts) {
+        this.abouts = abouts == null
+                ? null
+                : abouts.trim().toLowerCase();
+    }
 }

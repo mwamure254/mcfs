@@ -23,8 +23,22 @@ public class User extends BaseObject {
     private String fin;
     private String lan;
 
+    public void setFin(String fin) {
+        fin = fin.trim().toLowerCase();
+        this.fin = Character.toUpperCase(fin.charAt(0)) + fin.substring(1);
+    }
+
+    public void setLan(String lan) {
+        lan = lan.trim().toLowerCase();
+        this.lan = Character.toUpperCase(lan.charAt(0)) + lan.substring(1);
+    }
+
     @Column(unique = true)
     private String email;
+
+    public void setEmail(String email) {
+        this.email = email.toLowerCase();
+    }
 
     private String gender;
 

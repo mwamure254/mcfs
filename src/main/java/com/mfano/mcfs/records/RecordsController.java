@@ -191,6 +191,7 @@ public class RecordsController {
 
         Documents doc = documentService.findById(id);
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
+        String dir = "redirect";
         switch (option) {
 
             // delete document
@@ -201,8 +202,9 @@ public class RecordsController {
                             auth.getEmail() + " Deleted document id = " + doc.getName());
                 } catch (IOException e) {
                     auditService.record("DELETE_DOCUMENT", "FAIL",
-                            auth.getEmail() + " Failed teleted document id = " + doc.getName());
+                            auth.getEmail() + " Failed to delete document id = " + doc.getName());
                 }
+                dir = "redirect:/records/documents";
                 break;
 
             case "toggle":
@@ -217,9 +219,10 @@ public class RecordsController {
                             auth.getEmail() + " Fail to toggle document " + doc.getName());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle document");
                 }
+                dir = "redirect:/records/documents/edit/" + id;
                 break;
         }
-        return "redirect:/records/documents";
+        return dir;
     }
 
     // View document by reference

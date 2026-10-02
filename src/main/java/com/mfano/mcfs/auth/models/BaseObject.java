@@ -26,11 +26,11 @@ public abstract class BaseObject {
     private LocalDateTime updatedAt;
     
     private String createdBy;
+    private String updatedBy;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = createdAt;
 
        Authentication auth =
             SecurityContextHolder.getContext().getAuthentication();
@@ -43,6 +43,12 @@ public abstract class BaseObject {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+        Authentication auth =
+            SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
+            this.updatedBy = userDetails.getEmail();
+        }
     }
 
 }

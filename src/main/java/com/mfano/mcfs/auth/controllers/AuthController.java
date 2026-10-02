@@ -202,6 +202,9 @@ public class AuthController {
                 } else {
                     model.addAttribute("profile", profileService.checkProfile(auth.getId()));
                     model.addAttribute("user", userService.findById(auth.getId()));
+                    model.addAttribute("pending", taskService.findPending(auth));
+                    model.addAttribute("progress", taskService.findProgress());
+                    model.addAttribute("completed", taskService.findComplete(auth));
                     model.addAttribute("tasks", taskService.findAll());
                     dir = "records/tasks";
                 }
@@ -228,7 +231,7 @@ public class AuthController {
     public String taskSave(@AuthenticationPrincipal CustomUserDetails auth,
             @ModelAttribute DocumentTask task, RedirectAttributes red) {
 
-        taskService.save(task);
+        taskService.save(task,auth);
         auditService.record("CREATE_TASK", "SUCCESS", "User " + auth.getEmail() + " created a new task");
 
         red.addFlashAttribute("message", "Task created successfully.");

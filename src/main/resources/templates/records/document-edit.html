@@ -140,17 +140,15 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <div class="custom-control custom-switch">
-                                                <input type="checkbox" th:field="*{active}" class="custom-control-input"
-                                                    id="activeSwitch">
-
-                                                <label class="custom-control-label" for="activeSwitch">
+                                            <form th:action="@{/records/documents/toggle/{id}(id=${document.id})}"
+                                                method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-warning"
+                                                    th:title="${document.active ? 'Deactivate' : 'Activate'}">
                                                     <i
-                                                        th:class="${document.active ? 'fas fa-toggle-on text-success' : 'fas fa-toggle-off text-secondary'}"></i>
-
+                                                        th:class="${document.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off'}"></i>
                                                     Active
-                                                </label>
-                                            </div>
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
 
