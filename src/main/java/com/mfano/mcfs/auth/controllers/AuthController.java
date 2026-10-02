@@ -1,6 +1,7 @@
 package com.mfano.mcfs.auth.controllers;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.mfano.mcfs.config.CustomUserDetails;
 import com.mfano.mcfs.dtos.UserDto;
 import com.mfano.mcfs.utils.documents.models.DocumentTask;
+import com.mfano.mcfs.utils.documents.services.DocumentStatusService;
 import com.mfano.mcfs.utils.documents.services.DocumentTaskService;
 import com.mfano.mcfs.auth.models.User;
 import com.mfano.mcfs.auth.models.Profile;
@@ -39,6 +41,7 @@ public class AuthController {
     private final RoleService roleService;
     private final ProfileService profileService;
     private final DocumentTaskService taskService;
+    private final DocumentStatusService statusService;
 
     private final PasswordEncoder passwordEncoder;
     private String msg = "security/message";
@@ -154,7 +157,7 @@ public class AuthController {
             //@PreAuthorize("isAuthenticated()")
             case "profile":
                 if (auth == null) {
-                    model.addAttribute("error", "User not authenticated, login to proceed.");
+                    red.addFlashAttribute("error", "User not authenticated, login to proceed.");
                     return login;
                 } else{
                     model.addAttribute("profile", profileService.checkProfile(auth.getId()));
@@ -169,7 +172,7 @@ public class AuthController {
             //@PreAuthorize("isAuthenticated()")
             case "audits":
                 if (auth == null) {
-                    model.addAttribute("error", "User not authenticated, login to proceed.");
+                    red.addFlashAttribute("error", "User not authenticated, login to proceed.");
                     return login;
                 } else {
                     model.addAttribute("profile", profileService.checkProfile(auth.getId()));
@@ -183,7 +186,7 @@ public class AuthController {
             //@PreAuthorize("isAuthenticated()")
             case "logs":
                 if (auth == null) {
-                    model.addAttribute("error", "User not authenticated, login to proceed.");
+                    red.addFlashAttribute("error", "User not authenticated, login to proceed.");
                     return login;
                 } else {
                     model.addAttribute("profile", profileService.checkProfile(auth.getId()));
@@ -197,15 +200,17 @@ public class AuthController {
             //@PreAuthorize("isAuthenticated()")
             case "tasks":
                 if (auth == null) {
-                    red.addAttribute("error", "User not authenticated, login to proceed.");
+                    red.addFlashAttribute("error", "User not authenticated, login to proceed.");
                     return login;
                 } else {
                     model.addAttribute("profile", profileService.checkProfile(auth.getId()));
                     model.addAttribute("user", userService.findById(auth.getId()));
-                    model.addAttribute("pending", taskService.findPending(auth));
+                    model.addAttribute("pending", taskService.findPending());
                     model.addAttribute("progress", taskService.findProgress());
-                    model.addAttribute("completed", taskService.findComplete(auth));
+                    model.addAttribute("completed", taskService.findComplete());
                     model.addAttribute("tasks", taskService.findAll());
+                    model.addAttribute("roles", roleService.findAll());
+                    model.addAttribute("statuses", statusService.findAll());
                     dir = "records/tasks";
                 }
                 break;

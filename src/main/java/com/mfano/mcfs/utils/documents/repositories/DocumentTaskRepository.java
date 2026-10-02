@@ -11,14 +11,18 @@ import com.mfano.mcfs.utils.documents.models.DocumentStatus;
 import com.mfano.mcfs.utils.documents.models.DocumentTask;
 
 public interface DocumentTaskRepository extends JpaRepository<DocumentTask, Long> {
-     Optional<DocumentTask> findByRecipientIn(Set<Role> recipient);
+     List<DocumentTask> findByRecipientIn(Set<Role> recipient);
 
-     DocumentTask findByCreatedBy(String sender);
+     List<DocumentTask> findByCreatedBy(String sender);
 
-     Optional<DocumentTask> findByReference(String reference);
+     List<DocumentTask> findByReference(String reference);
 
-     Optional<DocumentTask> findByDosa(DocumentStatus byName);
+     List<DocumentTask> findByDosa(DocumentStatus byName);
 
-     List<DocumentTask> findCountByDosaIn(
-               List<DocumentStatus> statuses);
+     //List<DocumentTask> findCountByDosaIn(List<String> statuses);
+     List<DocumentTask> findByDosaIn(List<String> statuses);
+
+     List<DocumentTask> findByDosa(String dosa);
+
+     List<DocumentTask> findByUpdatedBy(String updatedBy);
 }

@@ -1,5 +1,7 @@
 package com.mfano.mcfs.utils.documents.models;
 
+import java.util.Set;
+
 import com.mfano.mcfs.auth.models.CommonObject;
 import com.mfano.mcfs.auth.models.Role;
 
@@ -23,11 +25,9 @@ public class DocumentTask extends CommonObject {
      * Person/organization receiving the document.
      */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "recipient")
+    @JoinColumn(name = "recipient", nullable = false)
     private Role recipient;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "dosa")
-    private DocumentStatus dosa;
+    private String dosa;
 
 }

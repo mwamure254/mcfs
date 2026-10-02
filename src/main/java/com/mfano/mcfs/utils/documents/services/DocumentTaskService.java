@@ -1,6 +1,7 @@
 package com.mfano.mcfs.utils.documents.services;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,9 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DocumentTaskService {
     private final DocumentTaskRepository taskRepository;
-    private final DocumentStatusService statusService;
-    private final RoleService roleService;
-    private boolean active = true; // Default value for active
+    private final DocumentService documentService;
 
     // Get All documents
     public List<DocumentTask> findAll() {
@@ -42,87 +41,140 @@ public class DocumentTaskService {
 
     // Update Role
     public void save(DocumentTask task, CustomUserDetails auth) {
-        DocumentTask existingTask = findByReferenceAndActive(task.getReference());
+        List<DocumentTask> existingTask = findByReference(task.getReference());
         if (existingTask == null) {
             taskRepository.save(task);
         } else {
-            existingTask.setActive(false);
-            existingTask.setUpdatedBy(auth.getEmail());
-            existingTask.setDosa(statusService.findByName("COMPLETED"));
-            existingTask.setUpdatedAt(LocalDateTime.now());
-            taskRepository.save(existingTask);
+            for (DocumentTask documentTask : existingTask) {
+                Documents doc = documentService.findByReference(task.getReference());
+                if (task.getDosa() == "COMPLETED") {
+                    doc.setCompletedAt(LocalDateTime.now());
+                    documentService.save(doc);
+                }
+                if (task.getDosa() == "ARCHIVED") {
+                    doc.setArchivedAt(LocalDateTime.now());
+                    documentService.save(doc);
+                }
+                documentTask.setActive(false);
+                documentTask.setUpdatedBy(auth.getEmail());
+                documentTask.setDosa(task.getDosa());
+                documentTask.setUpdatedAt(LocalDateTime.now());
+                taskRepository.save(documentTask);
+            }
 
             taskRepository.save(task);
         }
 
     }
 
-    public DocumentTask findByRecipient(Set<Role> recipient) {
-        return taskRepository.findByRecipientIn(recipient).orElse(null);
+    public List<DocumentTask> findByRecipient(Set<Role> recipient) {
+        return taskRepository.findByRecipientIn(recipient);
     }
 
-    public DocumentTask findBySender(String sender) {
+    public List<DocumentTask> findByDosa(String dosa) {
+        return taskRepository.findByDosa(dosa);
+    }
+
+    public List<DocumentTask> findByUpdatedBy(String updatedBy) {
+        return taskRepository.findByUpdatedBy(updatedBy);
+    }
+
+    public List<DocumentTask> findBySender(String sender) {
         return taskRepository.findByCreatedBy(sender);
     }
 
-    public DocumentTask findByReference(String reference) {
-        return taskRepository.findByReference(reference).orElse(null);
+    public List<DocumentTask> findByReference(String reference) {
+        return taskRepository.findByReference(reference);
     }
 
-    public DocumentTask findPended() {
-        return taskRepository.findByDosa(statusService.findByName("PENDING")).orElse(null);
+    public List<DocumentTask> findPended() {
+        return taskRepository.findByDosa("PENDING");
     }
 
-    public DocumentTask findCompleted() {
-        return taskRepository.findByDosa(statusService.findByName("COMPLETED")).orElse(null);
+    public List<DocumentTask> findCompleted() {
+        return taskRepository.findByDosa("COMPLETED");
     }
 
-    public DocumentTask findArchived() {
-        return taskRepository.findByDosa(statusService.findByName("ARCHIVED")).orElse(null);
+    public List<DocumentTask> findArchived() {
+        return taskRepository.findByDosa("ARCHIVED");
     }
 
     public List<DocumentTask> findProgress() {
-        List<DocumentStatus> statuses = List.of(
-                statusService.findByName("REVIEWED"),
-                statusService.findByName("FORWARDED"));
+        List<String> statuses = List.of(
+                "REVIEWED",
+                "FORWARDED");
 
-        return taskRepository
-                .findCountByDosaIn(statuses);
+        return taskRepository.findByDosaIn(statuses);
     }
 
-    public List<DocumentTask> findPending(CustomUserDetails auth) {
+    public List<DocumentTask> findPending() {
+        List<String> statuses = List.of(
+                "PENDING",
+                "RECEIVED",
+                "RETRIEVED",
+                "RETURNED");
 
-        List<DocumentStatus> statuses = List.of(
-                statusService.findByName("PENDING"),
-                statusService.findByName("RECEIVED"),
-                statusService.findByName("RETRIEVED"),
-                statusService.findByName("RETURNED"));
-
-        return taskRepository
-                .findCountByDosaIn(statuses);
-
+        return taskRepository.findByDosaIn(statuses);
     }
 
-    public List<DocumentTask> findComplete(CustomUserDetails auth) {
+    public List<DocumentTask> findComplete() {
+        List<String> statuses = List.of(
+                "CLOSED",
+                "COMPLETED",
+                "DISPOSED",
+                "REJECTED",
+                "ARCHIVED",
+                "APPROVED");
 
-        List<DocumentStatus> statuses = List.of(
-                statusService.findByName("CLOSED"),
-                statusService.findByName("COMPLETED"),
-                statusService.findByName("DISPOSED"),
-                statusService.findByName("REJECTED"),
-                statusService.findByName("ARCHIVED"),
-                statusService.findByName("APPROVED"));
-
-        return taskRepository
-                .findCountByDosaIn(statuses);
-
+        return taskRepository.findByDosaIn(statuses);
     }
 
-    public DocumentTask findByReferenceAndActive(String reference) {
-        this.active = true; // Ensure that only active tasks are considered
+    public List<DocumentTask> findByReferencePending(String reference) {
         return taskRepository.findAll().stream()
-                .filter(entry -> entry.getReference().equals(reference) && entry.isActive() == active)
-                .findFirst()
-                .orElse(null);
+                .filter(entry -> entry.getReference().equals(reference) && entry.isActive())
+                .toList();
+    }
+
+    public List<DocumentTask> findByReferenceComplete(String reference) {
+        return taskRepository.findAll().stream()
+                .filter(entry -> entry.getReference().equals(reference) && !entry.isActive())
+                .toList();
+    }
+
+    public List<DocumentTask> findByRecipientPending(Set<Role> recipient) {
+        if (recipient == null) {
+            return Collections.emptyList();
+        }
+        return findPending().stream()
+                .filter(entry -> entry.getRecipient().equals(recipient) && entry.isActive())
+                .toList();
+    }
+
+    public List<DocumentTask> findByRecipientPended(Set<Role> recipient) {
+        if (recipient == null) {
+            return Collections.emptyList();
+        }
+        return findAll().stream()
+                .filter(entry -> entry.getRecipient().equals(recipient) && entry.isActive())
+                .toList();
+
+    }
+
+    public List<DocumentTask> findByRecipientComplete() {
+        return findComplete().stream()
+                .filter(entry -> !entry.isActive())
+                .toList();
+    }
+
+    public List<DocumentTask> findByRecipientCompleted(String updatedBy) {
+        if (updatedBy == null || updatedBy.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        return findAll().stream()
+                .filter(task -> task.getUpdatedBy() != null)
+                .filter(task -> task.getUpdatedBy().equals(updatedBy))
+                .filter(task -> !task.isActive())
+                .toList();
     }
 }
