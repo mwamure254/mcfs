@@ -21,7 +21,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import lombok.RequiredArgsConstructor;
 
 import com.mfano.mcfs.auth.services.CustomDetailService;
-import com.mfano.mcfs.config.AuthHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -77,7 +76,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .formLogin(form -> form
                         // If you want a default /lnding page or /login
                         .loginPage("/login")
-                        // .loginProcessingUrl("/login") //open when /landing is login page
+                        .loginProcessingUrl("/login") //open when /landing is login page
                         .successHandler(auth)
                         .failureHandler(auth)
                         .permitAll())
