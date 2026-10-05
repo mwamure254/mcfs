@@ -1,7 +1,5 @@
 package com.mfano.mcfs.utils.documents.models;
 
-import java.util.Set;
-
 import com.mfano.mcfs.auth.models.CommonObject;
 import com.mfano.mcfs.auth.models.Role;
 

@@ -20,7 +20,6 @@ import com.lowagie.text.pdf.PdfWriter;
 public class DocumentHeaderFooter extends PdfPageEventHelper {
 
     private final String filter;
-
     public DocumentHeaderFooter(String filter) {
         this.filter = filter;
     }
@@ -109,7 +108,7 @@ public class DocumentHeaderFooter extends PdfPageEventHelper {
                 canvas,
                 Element.ALIGN_CENTER,
                 new Phrase(
-                        "DOCUMENT MANAGEMENT SYSTEM",
+                        "FILING MANAGEMENT SYSTEM",
                         subtitleFont
                 ),
                 centerX,

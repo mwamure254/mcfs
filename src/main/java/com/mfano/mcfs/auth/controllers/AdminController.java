@@ -1,13 +1,11 @@
 package com.mfano.mcfs.auth.controllers;
 
 import java.io.IOException;
-import java.util.Set;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -36,12 +34,10 @@ import com.mfano.mcfs.utils.documents.models.DocumentClass;
 import com.mfano.mcfs.utils.documents.models.DocumentStatus;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @Controller
 @PreAuthorize("hasAuthority('ADMIN')")
 @RequestMapping("/admin")
-@RequiredArgsConstructor
 public class AdminController {
     private final UserService userService;
     // private final PostService postService;
@@ -53,7 +49,20 @@ public class AdminController {
     private final DocumentClassService classService;
     private final DocumentStatusService statusService;
 
-     // manage /GET/*  module
+    public AdminController(UserService userService, ProfileService profileService, AuditService auditService,
+            RoleService roleService, BranchService storeService,
+            DocumentTypeService typeService, DocumentClassService classService, DocumentStatusService statusService) {
+        this.userService = userService;
+        this.profileService = profileService;
+        this.auditService = auditService;
+        this.roleService = roleService;
+        this.storeService = storeService;
+        this.typeService = typeService;
+        this.classService = classService;
+        this.statusService = statusService;
+    }
+
+    // manage /GET/* module
     @GetMapping("/{option}")
     public String getAll(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option, Model red) {
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
@@ -100,107 +109,107 @@ public class AdminController {
             case "types":
                 red.addAttribute("types", typeService.findAll());
                 dir = "admin/types";
-                break;  
+                break;
 
             case "classes":
                 red.addAttribute("classes", classService.findAll());
                 dir = "admin/classes";
-                break;  
+                break;
 
             case "statuses":
                 red.addAttribute("statuses", statusService.findAll());
                 dir = "admin/statuses";
-                break;      
+                break;
         }
 
         return dir;
     }
 
-    //update user
+    // update user
     @PostMapping("/users/update/{id}")
     public String updateUser(@AuthenticationPrincipal CustomUserDetails auth,
             @PathVariable("id") Long id,
             @Valid @ModelAttribute UserDto userDto,
-            RedirectAttributes redirectAttributes){
+            RedirectAttributes redirectAttributes) {
 
         userService.update(id, userDto);
         auditService.record("UPDATE_USER", "SUCCESS", auth.getEmail() + " Updated user: " + userDto.getEmail());
         redirectAttributes.addFlashAttribute(
                 "message",
-                "User updated successfully."
-        );
+                "User updated successfully.");
 
         return "redirect:/admin/manage/user/{id}";
     }
-    //Role update
+
+    // Role update
     @PostMapping("/roles/update/{id}")
     public String updateRole(@AuthenticationPrincipal CustomUserDetails auth,
             @PathVariable Long id,
             @Valid Role role,
-            RedirectAttributes redirectAttributes){
+            RedirectAttributes redirectAttributes) {
 
         roleService.update(id, role);
         auditService.record("UPDATE_ROLE", "SUCCESS", auth.getEmail() + " Updated role: " + role.getName());
         redirectAttributes.addFlashAttribute(
                 "message",
-                "Role updated successfully."
-        );
+                "Role updated successfully.");
 
         return "redirect:/admin/roles";
     }
-    //Type update
+
+    // Type update
     @PostMapping("/types/update/{id}")
     public String updateType(@AuthenticationPrincipal CustomUserDetails auth,
             @PathVariable Long id,
             @Valid DocumentType dote,
-            RedirectAttributes redirectAttributes){
+            RedirectAttributes redirectAttributes) {
 
         typeService.update(id, dote);
         auditService.record("UPDATE_TYPE", "SUCCESS", auth.getEmail() + " Updated type: " + dote.getName());
         redirectAttributes.addFlashAttribute(
                 "message",
-                "Type updated successfully."
-        );
+                "Type updated successfully.");
 
         return "redirect:/admin/types";
     }
-    //Status update
+
+    // Status update
     @PostMapping("/statuses/update/{id}")
     public String updateRole(@AuthenticationPrincipal CustomUserDetails auth,
             @PathVariable Long id,
             @Valid DocumentStatus dosa,
-            RedirectAttributes redirectAttributes){
+            RedirectAttributes redirectAttributes) {
 
         statusService.update(id, dosa);
         auditService.record("UPDATE_STATUS", "SUCCESS", auth.getEmail() + " Updated status: " + dosa.getName());
         redirectAttributes.addFlashAttribute(
                 "message",
-                "Status updated successfully."
-        );
+                "Status updated successfully.");
 
         return "redirect:/admin/statuses";
     }
-    //Class update
+
+    // Class update
     @PostMapping("/classes/update/{id}")
     public String updateRole(@AuthenticationPrincipal CustomUserDetails auth,
             @PathVariable Long id,
             @Valid DocumentClass doca,
-            RedirectAttributes redirectAttributes){
+            RedirectAttributes redirectAttributes) {
 
         classService.update(id, doca);
         auditService.record("UPDATE_CLASS", "SUCCESS", auth.getEmail() + " Updated class: " + doca.getName());
         redirectAttributes.addFlashAttribute(
                 "message",
-                "Class updated successfully."
-        );
+                "Class updated successfully.");
 
         return "redirect:/admin/classes";
     }
 
-     // manage /user route
+    // manage /user route
     @PostMapping("/users/{option}/{id}")
-    public String manageGetter(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option, @PathVariable Long id, 
-        Model model, RedirectAttributes red) {
+    public String manageGetter(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option,
+            @PathVariable Long id,
+            Model model, RedirectAttributes red) {
 
         User user = userService.findById(id);
         model.addAttribute("user", user);
@@ -220,11 +229,11 @@ public class AdminController {
             case "resend":
                 if (user != null && !user.isEnabled()) {
                     userService.createAndSendToken(user);
-                    auditService.record("RESEND_VERIFICATION", "SUCCESS", auth.getEmail() + " Resent token to user id=" + id);
+                    auditService.record("RESEND_VERIFICATION", "SUCCESS",
+                            auth.getEmail() + " Resent token to user id=" + id);
                     red.addFlashAttribute("message", "Link resent to user");
                     dir = "redirect:/admin/users";
-                }
-                else{
+                } else {
                     red.addFlashAttribute("error", "Sorry! Failed to send link.");
                     dir = "redirect:/admin/users";
                 }
@@ -255,7 +264,8 @@ public class AdminController {
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
         try {
             profileService.uploadImage2(userid, file, red);
-            auditService.record("UPDATE_IMAGE", "SUCCESS", auth.getEmail() + " Updated the profile image  of user id=" + userid);
+            auditService.record("UPDATE_IMAGE", "SUCCESS",
+                    auth.getEmail() + " Updated the profile image  of user id=" + userid);
             red.addFlashAttribute("message", "Image updated successfully");
         } catch (IOException e) {
             red.addFlashAttribute("error", e.getMessage());
@@ -267,12 +277,14 @@ public class AdminController {
     // Delete profile image
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/image/delete/{userid}")
-    public String imageDelete(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable Long userid, RedirectAttributes red) {
-        
+    public String imageDelete(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable Long userid,
+            RedirectAttributes red) {
+
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
         try {
             profileService.deleteImage1(userid, red);
-            auditService.record("DELETE_IMAGE", "SUCCESS", auth.getEmail() + " Deleted the profile image of user id=" + userid);
+            auditService.record("DELETE_IMAGE", "SUCCESS",
+                    auth.getEmail() + " Deleted the profile image of user id=" + userid);
             red.addFlashAttribute("message", "Image deleted successfully");
         } catch (IOException e) {
             red.addFlashAttribute("error", e.getMessage());
@@ -283,7 +295,8 @@ public class AdminController {
 
     // Assign Remove roles
     @PostMapping("/{option}/{userId}/{roleId}")
-    public String userRole(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable Long userId, @PathVariable String option,
+    public String userRole(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable Long userId,
+            @PathVariable String option,
             @PathVariable Long roleId, RedirectAttributes red) {
         red.addAttribute("profile", profileService.checkProfile(auth.getId()));
 
@@ -297,37 +310,36 @@ public class AdminController {
                         throw new RuntimeException("User not found.");
                     }
                     if (role == null) {
-                       throw new RuntimeException("Role not found.");
+                        throw new RuntimeException("Role not found.");
                     }
 
                     // Prevent duplicate role assignment
                     if (user.getRoles().contains(role)) {
                         red.addFlashAttribute(
-                            "error",
-                            "Role is already assigned to this user."
-                        );
+                                "error",
+                                "Role is already assigned to this user.");
                     }
 
                     userService.assignRoleToUser(userId, roleId);
-                    auditService.record("ASSIGN_ROLE", "SUCCESS", auth.getEmail() + " Assigned user id=" + userId + " role id=" + roleId);
+                    auditService.record("ASSIGN_ROLE", "SUCCESS",
+                            auth.getEmail() + " Assigned user id=" + userId + " role id=" + roleId);
                     red.addFlashAttribute(
-                        "message",
-                        "Role '" + role.getName() + "' assigned successfully."
-                    );
+                            "message",
+                            "Role '" + role.getName() + "' assigned successfully.");
 
                 } catch (RuntimeException e) {
                     red.addFlashAttribute("error", e.getMessage());
                 } catch (Exception e) {
                     red.addFlashAttribute(
-                        "error",
-                        "Unable to assign role."
-                    );
+                            "error",
+                            "Unable to assign role.");
                 }
                 break;
 
             case "remove":
                 userService.removeRoleFromUser(userId, roleId);
-                auditService.record("REMOVE_ROLE", "SUCCESS", auth.getEmail() + " Revoked role id=" + roleId + " from user id=" + userId);
+                auditService.record("REMOVE_ROLE", "SUCCESS",
+                        auth.getEmail() + " Revoked role id=" + roleId + " from user id=" + userId);
                 red.addFlashAttribute("message", "Role removed successful");
                 break;
 
@@ -339,9 +351,10 @@ public class AdminController {
         return "redirect:/admin/manage/user/{userId}";
     }
 
-    //Role saving
+    // Role saving
     @PostMapping("/roles/save")
-    public String saveRole(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute Role role, RedirectAttributes red) {
+    public String saveRole(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute Role role,
+            RedirectAttributes red) {
         try {
             roleService.save(role);
             auditService.record("CREATE_ROLE", "SUCCESS", auth.getEmail() + " Created role: " + role.getName());
@@ -352,23 +365,26 @@ public class AdminController {
         }
         return "redirect:/admin/roles";
     }
-    //save user
+
+    // save user
     @PostMapping("/users/save")
-    public String saveUser(@AuthenticationPrincipal CustomUserDetails auth, 
-        @ModelAttribute UserDto userDto, RedirectAttributes red) {
+    public String saveUser(@AuthenticationPrincipal CustomUserDetails auth,
+            @ModelAttribute UserDto userDto, RedirectAttributes red) {
         try {
             userService.registerUser(userDto);
             auditService.record("CREATE_USER", "SUCCESS", auth.getEmail() + " Created user: " + userDto.getEmail());
             red.addFlashAttribute("message", "User created successfully!");
         } catch (Exception e) {
-                    auditService.record("CREATE_USER", "FAIL", auth.getEmail() + " Fail to create user: " + userDto.getEmail());
-                    red.addFlashAttribute("error", e.getMessage());
-                }
+            auditService.record("CREATE_USER", "FAIL", auth.getEmail() + " Fail to create user: " + userDto.getEmail());
+            red.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/users";
     }
-    //Classes, Types and Statuses
-     @PostMapping("/types/save")
-    public String saveType(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute DocumentType dote, RedirectAttributes red) {
+
+    // Classes, Types and Statuses
+    @PostMapping("/types/save")
+    public String saveType(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute DocumentType dote,
+            RedirectAttributes red) {
         try {
             typeService.save(dote);
             auditService.record("CREATE_TYPE", "SUCCESS", auth.getEmail() + " Created type: " + dote.getName());
@@ -378,9 +394,11 @@ public class AdminController {
             red.addAttribute("error", e.getMessage());
         }
         return "redirect:/admin/types";
-    } 
+    }
+
     @PostMapping("/classes/save")
-    public String saveClass(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute DocumentClass doca, RedirectAttributes red) {
+    public String saveClass(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute DocumentClass doca,
+            RedirectAttributes red) {
         try {
             classService.save(doca);
             auditService.record("CREATE_CLASS", "SUCCESS", auth.getEmail() + " Created class: " + doca.getName());
@@ -390,9 +408,11 @@ public class AdminController {
             red.addAttribute("error", e.getMessage());
         }
         return "redirect:/admin/classes";
-    } 
+    }
+
     @PostMapping("/statuses/save")
-    public String saveStatus(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute DocumentStatus dosa, RedirectAttributes red) {
+    public String saveStatus(@AuthenticationPrincipal CustomUserDetails auth, @ModelAttribute DocumentStatus dosa,
+            RedirectAttributes red) {
         try {
             statusService.save(dosa);
             auditService.record("CREATE_STATUS", "SUCCESS", auth.getEmail() + " Created status: " + dosa.getName());
@@ -404,10 +424,10 @@ public class AdminController {
         return "redirect:/admin/status";
     }
 
-    //Manage All models
+    // Manage All models
     @GetMapping("/manage/{option}/{id}")
     public String manageAll(@AuthenticationPrincipal CustomUserDetails auth,
-         @PathVariable String option, @PathVariable Long id, Model model) {
+            @PathVariable String option, @PathVariable Long id, Model model) {
 
         model.addAttribute("profile", profileService.checkProfile(auth.getId()));
         model.addAttribute("user", userService.findById(auth.getId()));
@@ -460,15 +480,15 @@ public class AdminController {
                 model.addAttribute("rame", "Status");
                 dir = "admin/edits";
                 break;
-                   
+
         }
 
         return dir;
     }
 
-     // Toggle /classes/statuses/types/*  module **All
+    // Toggle /classes/statuses/types/* module **All
     @PostMapping("/{option}/toggle/{id}")
-    public String toggleAll(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option, 
+    public String toggleAll(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable String option,
             @PathVariable Long id,
             RedirectAttributes red) {
 
@@ -479,13 +499,15 @@ public class AdminController {
             case "classes":
                 DocumentClass doca = classService.findById(id);
                 try {
-                classService.toggleActive(id);
-                auditService.record("TOGGLE_CLASS", "SUCCESS", auth.getEmail() + " Toggled class id=" + doca.getName());
-                red.addFlashAttribute("message", "Class toggled successfully.");
-                dir = "redirect:/admin/classes";
-                    
+                    classService.toggleActive(id);
+                    auditService.record("TOGGLE_CLASS", "SUCCESS",
+                            auth.getEmail() + " Toggled class id=" + doca.getName());
+                    red.addFlashAttribute("message", "Class toggled successfully.");
+                    dir = "redirect:/admin/classes";
+
                 } catch (Exception e) {
-                    auditService.record("TOGGLE_CLASS", "FAIL", auth.getEmail() + " Fail to toggle class id=" + doca.getName());
+                    auditService.record("TOGGLE_CLASS", "FAIL",
+                            auth.getEmail() + " Fail to toggle class id=" + doca.getName());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle status");
                     dir = "redirect:/admin/statuses";
                 }
@@ -495,29 +517,33 @@ public class AdminController {
             case "statuses":
                 DocumentStatus dosa = statusService.findById(id);
                 try {
-                statusService.toggleActive(id);
-                auditService.record("TOGGLE_STATUS", "SUCCESS", auth.getEmail() + " Toggled status id=" + dosa.getName());
-                red.addFlashAttribute("message", "Status toggled successfully.");
-                dir = "redirect:/admin/statuses";
-                    
+                    statusService.toggleActive(id);
+                    auditService.record("TOGGLE_STATUS", "SUCCESS",
+                            auth.getEmail() + " Toggled status id=" + dosa.getName());
+                    red.addFlashAttribute("message", "Status toggled successfully.");
+                    dir = "redirect:/admin/statuses";
+
                 } catch (Exception e) {
-                    auditService.record("TOGGLE_STATUS", "FAIL", auth.getEmail() + " Fail to toggle status id=" + dosa.getName());
+                    auditService.record("TOGGLE_STATUS", "FAIL",
+                            auth.getEmail() + " Fail to toggle status id=" + dosa.getName());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle status");
                     dir = "redirect:/admin/statuses";
                 }
-                break; 
+                break;
 
             // Toggle type
             case "types":
                 DocumentType dote = typeService.findById(id);
                 try {
-                typeService.toggleActive(id);
-                auditService.record("TOGGLE_TYPE", "SUCCESS", auth.getEmail() + " toggled type id=" + dote.getName());
-                red.addFlashAttribute("message", "Type toggled successfully.");
-                dir = "redirect:/admin/types";
-                    
+                    typeService.toggleActive(id);
+                    auditService.record("TOGGLE_TYPE", "SUCCESS",
+                            auth.getEmail() + " toggled type id=" + dote.getName());
+                    red.addFlashAttribute("message", "Type toggled successfully.");
+                    dir = "redirect:/admin/types";
+
                 } catch (Exception e) {
-                    auditService.record("TOGGLE_TYPE", "FAIL", auth.getEmail() + " Fail to toggle type id=" + dote.getName());
+                    auditService.record("TOGGLE_TYPE", "FAIL",
+                            auth.getEmail() + " Fail to toggle type id=" + dote.getName());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle type");
                     dir = "redirect:/admin/types";
                 }
@@ -527,13 +553,15 @@ public class AdminController {
             case "roles":
                 Role role = roleService.findById(id);
                 try {
-                roleService.toggleActive(id);
-                auditService.record("TOGGLE_ROLE", "SUCCESS", auth.getEmail() + " toggled role id=" + role.getName());
-                red.addFlashAttribute("message", "Role toggled successfully.");
-                dir = "redirect:/admin/roles";
-                    
+                    roleService.toggleActive(id);
+                    auditService.record("TOGGLE_ROLE", "SUCCESS",
+                            auth.getEmail() + " toggled role id=" + role.getName());
+                    red.addFlashAttribute("message", "Role toggled successfully.");
+                    dir = "redirect:/admin/roles";
+
                 } catch (Exception e) {
-                    auditService.record("ROLE", "FAIL", auth.getEmail() + " Fail to toggle role: " + role.getName() + " to enabled=" + role.isActive());
+                    auditService.record("ROLE", "FAIL", auth.getEmail() + " Fail to toggle role: " + role.getName()
+                            + " to enabled=" + role.isActive());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle role");
                     dir = "redirect:/admin/roles";
                 }
@@ -544,16 +572,18 @@ public class AdminController {
                 User user = userService.findById(id);
                 try {
                     userService.toggleActive(id);
-                    auditService.record("TOGGLE_USER", "SUCCESS", auth.getEmail() + " Toggled user: " + user.getEmail() + " to enabled=" + user.isEnabled());
+                    auditService.record("TOGGLE_USER", "SUCCESS",
+                            auth.getEmail() + " Toggled user: " + user.getEmail() + " to enabled=" + user.isEnabled());
                     red.addFlashAttribute("message", "Toggled user successfully");
                     dir = "redirect:/admin/users";
-                    
+
                 } catch (Exception e) {
-                    auditService.record("TOGGLE_USER", "FAIL", auth.getEmail() + " Fail to toggle user: " + user.getEmail() + " to enabled=" + user.isEnabled());
+                    auditService.record("TOGGLE_USER", "FAIL", auth.getEmail() + " Fail to toggle user: "
+                            + user.getEmail() + " to enabled=" + user.isEnabled());
                     red.addFlashAttribute("error", "Sorry! Failed to toggle user");
                     dir = "redirect:/admin/users";
                 }
-                break;   
+                break;
         }
 
         return dir;
@@ -561,19 +591,19 @@ public class AdminController {
 
     // manage /user route
     @PostMapping("/{option}/delete/{id}")
-    public String deleteAll(@AuthenticationPrincipal CustomUserDetails auth, 
-        @PathVariable String option, @PathVariable Long id, RedirectAttributes red) {
+    public String deleteAll(@AuthenticationPrincipal CustomUserDetails auth,
+            @PathVariable String option, @PathVariable Long id, RedirectAttributes red) {
 
         String dir = "redirect";
         switch (option) {
-            //Delete role
+            // Delete role
             case "roles":
                 try {
-                roleService.delete(id);
-                auditService.record("DELETE_ROLE", "SUCCESS", auth.getEmail() + " Deleted role id=" + id);
-                red.addFlashAttribute( "message", "Role deleted successfully.");
-                dir = "redirect:/admin/roles";
-                    
+                    roleService.delete(id);
+                    auditService.record("DELETE_ROLE", "SUCCESS", auth.getEmail() + " Deleted role id=" + id);
+                    red.addFlashAttribute("message", "Role deleted successfully.");
+                    dir = "redirect:/admin/roles";
+
                 } catch (Exception e) {
                     auditService.record("DELETE_ROLE", "FAIL", auth.getEmail() + " Fail to delete role id=" + id);
                     red.addFlashAttribute("error", "Sorry! Failed to delete role.");
@@ -581,14 +611,14 @@ public class AdminController {
                 }
                 break;
 
-            //Delete class
+            // Delete class
             case "classes":
                 try {
                     classService.delete(id);
                     auditService.record("DELETE_CLASS", "SUCCESS", auth.getEmail() + " Deleted class id=" + id);
                     red.addFlashAttribute("message", "Class successfully deleted.");
                     dir = "redirect:/admin/classes";
-                    
+
                 } catch (Exception e) {
                     auditService.record("DELETE_CLASS", "FAIL", auth.getEmail() + " Fail to delete class id=" + id);
                     red.addFlashAttribute("error", "Sorry! Failed to delete class.");

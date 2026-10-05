@@ -3,19 +3,24 @@
     <i class="fas fa-angle-up"></i>
 </a>
 
-<!-- Logout Modal-->
-<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-sm" role="document">
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-info-triangle mr-2"></i>Logout
+                    Session</h5>
+                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+            </div>
             <div class="modal-body">
-                <p>Logout to end your current session.</p>
+                <p>Are you sure you want to logout <strong>session</strong>?</p>
+                <div class="alert alert-info mb-0"><i class="fas fa-info-circle mr-1"></i>You
+                    can always come back.</div>
             </div>
             <div class="modal-footer">
-                 <button class="btn btn-sm btn-warning" data-dismiss="modal" aria-label="Close">
-                    Cancel
-                </button>
-                <a class="btn btn-sm btn-primary" th:href="@{/logout}">Logout</a>
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-dismiss="modal"><i
+                        class="fas fa-times mr-1"></i>Cancel</button>
+                <a class="btn btn-sm btn-outline-primary" th:href="@{/logout}">Logout</a>
             </div>
         </div>
     </div>
@@ -23,8 +28,7 @@
 
 <!-- Floating Alerts -->
 <div th:if="${message}" id="floatingAlertSuccess"
-    class="alert alert-success alert-dismissible fade show position-fixed shadow"
-    role="alert"
+    class="alert alert-success alert-dismissible fade show position-fixed shadow" role="alert"
     style="z-index: 1080; min-width: 300px; top: 20px; right: 20px;">
 
     <i class="fas fa-check-circle mr-2"></i>
@@ -36,8 +40,7 @@
 </div>
 
 <div th:if="${error}" id="floatingAlertError"
-    class="alert alert-danger alert-dismissible fade show position-fixed shadow"
-    role="alert"
+    class="alert alert-danger alert-dismissible fade show position-fixed shadow" role="alert"
     style="z-index: 1080; min-width: 300px; top: 20px; right: 20px;">
 
     <i class="fas fa-exclamation-triangle mr-2"></i>

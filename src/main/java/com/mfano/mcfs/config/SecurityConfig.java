@@ -18,17 +18,20 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import lombok.RequiredArgsConstructor;
-
 import com.mfano.mcfs.auth.services.CustomDetailService;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig implements WebMvcConfigurer {
     private final CustomDetailService customDetailService;
     private final PasswordEncoder passwordEncoder;
     private final AuthHandler auth;
+
+    public SecurityConfig(CustomDetailService customDetailService, PasswordEncoder passwordEncoder, AuthHandler auth) {
+        this.customDetailService = customDetailService;
+        this.passwordEncoder = passwordEncoder;
+        this.auth = auth;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

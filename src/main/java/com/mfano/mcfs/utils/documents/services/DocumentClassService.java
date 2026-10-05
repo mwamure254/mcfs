@@ -1,19 +1,19 @@
 package com.mfano.mcfs.utils.documents.services;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.mfano.mcfs.utils.documents.models.DocumentClass;
 import com.mfano.mcfs.utils.documents.repositories.DocumentClassRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class DocumentClassService {
     private final DocumentClassRepository documentClassRepository;
+
+    public DocumentClassService(DocumentClassRepository documentClassRepository) {
+        this.documentClassRepository = documentClassRepository;
+    }
 
     // Get All documents
     public List<DocumentClass> findAll() {
@@ -45,11 +45,11 @@ public class DocumentClassService {
         save(existing);
     }
 
-    public void update(Long id, DocumentClass doca){
+    public void update(Long id, DocumentClass doca) {
         DocumentClass existing = findById(id);
 
         existing.setName(doca.getName());
-        existing.setDescription(doca.getDescription());        
+        existing.setDescription(doca.getDescription());
 
         save(existing);
     }

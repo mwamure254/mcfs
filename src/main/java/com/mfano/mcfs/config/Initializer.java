@@ -24,10 +24,8 @@ import com.mfano.mcfs.utils.documents.repositories.DocumentStatusRepository;
 import com.mfano.mcfs.utils.documents.repositories.DocumentTypeRepository;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 @Transactional
 public class Initializer implements CommandLineRunner {
 
@@ -39,6 +37,16 @@ public class Initializer implements CommandLineRunner {
     private final DocumentStatusRepository ds;
     private final DocumentTypeRepository dt;
     private final DocumentClassRepository dc;
+
+     public Initializer(UserRepository userRepository, RoleRepository roleRepo, PasswordEncoder passwordEncoder, BranchRepository branchRepo, DocumentStatusRepository ds, DocumentTypeRepository dt, DocumentClassRepository dc) {
+        this.userRepository = userRepository;
+        this.roleRepo = roleRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.branchRepo = branchRepo;
+        this.ds = ds;
+        this.dt = dt;
+        this.dc = dc;
+    }
 
     @Value("${app.admin.email}")
     private String adminEmail;

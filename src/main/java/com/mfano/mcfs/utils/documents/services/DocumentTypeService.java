@@ -1,19 +1,20 @@
 package com.mfano.mcfs.utils.documents.services;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.mfano.mcfs.utils.documents.models.DocumentType;
 import com.mfano.mcfs.utils.documents.repositories.DocumentTypeRepository;
 
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class DocumentTypeService {
     private final DocumentTypeRepository documentTypeRepository;
+
+     public DocumentTypeService(DocumentTypeRepository documentTypeRepository) {
+        this.documentTypeRepository = documentTypeRepository;
+    }
 
     // Get All documents
     public List<DocumentType> findAll() {

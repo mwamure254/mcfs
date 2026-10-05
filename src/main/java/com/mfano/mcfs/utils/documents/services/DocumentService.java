@@ -22,9 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -44,16 +41,19 @@ import com.mfano.mcfs.utils.documents.DocumentHeaderFooter;
 import com.mfano.mcfs.utils.documents.models.Documents;
 import com.mfano.mcfs.utils.documents.repositories.DocumentRepository;
 
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class DocumentService {
     private final AuditService auditService;
     @Value("${app.upload-dir}")
     private String uploadDir;
     private final DocumentRepository documentRepository;
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
+     public DocumentService(AuditService auditService, DocumentRepository documentRepository) {
+        this.auditService = auditService;
+        this.documentRepository = documentRepository;
+    }
 
     // Get Role By Id
     public Documents findById(Long id) {
@@ -404,7 +404,6 @@ public class DocumentService {
                     int count = 1;
 
                     for (Documents document : documents) {
-
                         table.addCell(String.valueOf(count++));
 
                         table.addCell(

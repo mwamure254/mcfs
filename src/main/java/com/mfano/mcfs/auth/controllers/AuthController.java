@@ -1,12 +1,10 @@
 package com.mfano.mcfs.auth.controllers;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,31 +21,42 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.mfano.mcfs.config.CustomUserDetails;
 import com.mfano.mcfs.dtos.UserDto;
 import com.mfano.mcfs.utils.documents.models.DocumentTask;
+import com.mfano.mcfs.utils.documents.services.DocumentClassService;
 import com.mfano.mcfs.utils.documents.services.DocumentStatusService;
 import com.mfano.mcfs.utils.documents.services.DocumentTaskService;
+import com.mfano.mcfs.utils.documents.services.DocumentTypeService;
 import com.mfano.mcfs.auth.models.User;
 import com.mfano.mcfs.auth.models.Profile;
 import com.mfano.mcfs.auth.services.AuditService;
+import com.mfano.mcfs.auth.services.BranchService;
 import com.mfano.mcfs.auth.services.RoleService;
 import com.mfano.mcfs.auth.services.UserService;
 import com.mfano.mcfs.auth.services.ProfileService;
 
-import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
     private final RoleService roleService;
     private final ProfileService profileService;
     private final DocumentTaskService taskService;
     private final DocumentStatusService statusService;
-
     private final PasswordEncoder passwordEncoder;
     private String msg = "security/message";
     private static final String login = "redirect:/login?error";
-
     private final AuditService auditService;
+
+    public AuthController(UserService userService, ProfileService profileService, AuditService auditService,
+            RoleService roleService, BranchService storeService,
+            DocumentTypeService typeService, DocumentClassService classService, DocumentStatusService statusService,DocumentTaskService taskService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.profileService = profileService;
+        this.auditService = auditService;
+        this.roleService = roleService;
+        this.statusService = statusService;
+        this.taskService = taskService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     // guest user
     @SuppressWarnings("null")
@@ -162,8 +171,6 @@ public class AuthController {
                 } else{
                     model.addAttribute("profile", profileService.checkProfile(auth.getId()));
                     model.addAttribute("user", userService.findById(auth.getId()));
-                    // Add user info to model (for Thymeleaf dashboard pages)
-                    model.addAttribute("user", userService.findById(auth.getId()));
                     dir = "security/profile";
                 }
                 break;
@@ -208,10 +215,23 @@ public class AuthController {
                     model.addAttribute("pending", taskService.findPending());
                     model.addAttribute("progress", taskService.findProgress());
                     model.addAttribute("completed", taskService.findComplete());
-                    model.addAttribute("tasks", taskService.findAll());
+                    model.addAttribute("tasks", taskService.findAllActive());
                     model.addAttribute("roles", roleService.findAll());
                     model.addAttribute("statuses", statusService.findAll());
                     dir = "records/tasks";
+                }
+                break;//Get history page
+            //@PreAuthorize("isAuthenticated()")
+            case "history":
+                if (auth == null) {
+                    red.addFlashAttribute("error", "User not authenticated, login to proceed.");
+                    return login;
+                } else {
+                    model.addAttribute("profile", profileService.checkProfile(auth.getId()));
+                    model.addAttribute("user", userService.findById(auth.getId()));
+                    model.addAttribute("history", taskService.findAllComplete());
+                    model.addAttribute("roles", roleService.findAll());
+                    dir = "records/history";
                 }
                 break;
         }
@@ -237,6 +257,19 @@ public class AuthController {
             @ModelAttribute DocumentTask task, RedirectAttributes red) {
 
         taskService.save(task,auth);
+        auditService.record("CREATE_TASK", "SUCCESS", "User " + auth.getEmail() + " created a new task");
+
+        red.addFlashAttribute("message", "Task created successfully.");
+        return "redirect:/tasks";
+    }
+
+    // Task/update @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/task/update/{id}")
+    public String taskUpdate(@AuthenticationPrincipal CustomUserDetails auth, @PathVariable Long id,
+            @ModelAttribute DocumentTask task, RedirectAttributes red) {
+
+        taskService.update(id,task,auth);
         auditService.record("CREATE_TASK", "SUCCESS", "User " + auth.getEmail() + " created a new task");
 
         red.addFlashAttribute("message", "Task created successfully.");

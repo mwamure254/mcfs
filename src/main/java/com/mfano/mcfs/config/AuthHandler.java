@@ -18,15 +18,17 @@ import com.mfano.mcfs.auth.services.AuditService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
 public class AuthHandler implements AuthenticationSuccessHandler,
         AuthenticationFailureHandler, LogoutHandler {
 
     private final AuditService auditService;
     String message = "Invalid username or password";
+
+    public AuthHandler(AuditService auditService) {
+        this.auditService = auditService;
+    }
 
     private String msg(String ms) {
         return "/login?error=true&message=" +

@@ -1,19 +1,19 @@
 package com.mfano.mcfs.utils.documents.services;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.mfano.mcfs.utils.documents.models.DocumentStatus;
 import com.mfano.mcfs.utils.documents.repositories.DocumentStatusRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class DocumentStatusService {
     private final DocumentStatusRepository documentStatusRepository;
+
+     public DocumentStatusService(DocumentStatusRepository documentStatusRepository) {
+        this.documentStatusRepository = documentStatusRepository;
+    }
 
     // Get All documents
     public List<DocumentStatus> findAll() {

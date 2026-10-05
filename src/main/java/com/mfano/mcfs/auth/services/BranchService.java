@@ -1,20 +1,19 @@
 package com.mfano.mcfs.auth.services;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.mfano.mcfs.auth.models.Branch;
 import com.mfano.mcfs.auth.repositories.BranchRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class BranchService {
     private final BranchRepository branchRepository;
+
+    public BranchService (BranchRepository branchRepository){
+this.branchRepository = branchRepository;
+    }
 
     public void createBranch(Branch branch) {
         branchRepository.save(branch);

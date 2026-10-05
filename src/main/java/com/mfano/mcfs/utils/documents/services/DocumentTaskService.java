@@ -2,27 +2,26 @@ package com.mfano.mcfs.utils.documents.services;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.mfano.mcfs.auth.models.Role;
-import com.mfano.mcfs.auth.services.RoleService;
 import com.mfano.mcfs.config.CustomUserDetails;
-import com.mfano.mcfs.utils.documents.models.DocumentStatus;
 import com.mfano.mcfs.utils.documents.models.DocumentTask;
 import com.mfano.mcfs.utils.documents.models.Documents;
 import com.mfano.mcfs.utils.documents.repositories.DocumentTaskRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class DocumentTaskService {
     private final DocumentTaskRepository taskRepository;
     private final DocumentService documentService;
+
+    public DocumentTaskService(DocumentService auditService, DocumentTaskRepository taskRepository) {
+        this.documentService = auditService;
+        this.taskRepository = taskRepository;
+    }
 
     // Get All documents
     public List<DocumentTask> findAll() {
@@ -64,6 +63,36 @@ public class DocumentTaskService {
 
             taskRepository.save(task);
         }
+
+    }
+
+    // Update Role
+    public void update(Long id, DocumentTask task, CustomUserDetails auth) {
+        DocumentTask existingTask = findById(id), adding;
+        adding = new DocumentTask();
+        if (existingTask != null) {
+            Documents doc = documentService.findByReference(existingTask.getReference());
+            if (task.getDosa() == "COMPLETED") {
+                doc.setCompletedAt(LocalDateTime.now());
+                documentService.save(doc);
+            }
+            if (task.getDosa() == "ARCHIVED") {
+                doc.setArchivedAt(LocalDateTime.now());
+                documentService.save(doc);
+            }
+            existingTask.setActive(false);
+            existingTask.setUpdatedBy(auth.getEmail());
+            existingTask.setUpdatedAt(LocalDateTime.now());
+            taskRepository.save(existingTask);
+
+            adding.setReference(existingTask.getReference());
+        }
+
+        adding.setRecipient(task.getRecipient());
+        adding.setDosa(task.getDosa());
+        adding.setName(task.getName());
+        adding.setDescription(task.getDescription());
+        taskRepository.save(adding);
 
     }
 
@@ -127,6 +156,18 @@ public class DocumentTaskService {
                 "APPROVED");
 
         return taskRepository.findByDosaIn(statuses);
+    }
+
+    public List<DocumentTask> findAllActive() {
+        return taskRepository.findAll().stream()
+                .filter(entry -> entry.isActive())
+                .toList();
+    }
+
+    public List<DocumentTask> findAllComplete() {
+        return taskRepository.findAll().stream()
+                .filter(entry -> !entry.isActive())
+                .toList();
     }
 
     public List<DocumentTask> findByReferencePending(String reference) {

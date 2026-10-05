@@ -19,18 +19,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mcfs.auth.models.Profile;
 import com.mfano.mcfs.auth.models.User;
-import com.mfano.mcfs.auth.services.UserService;
 import com.mfano.mcfs.auth.repositories.ProfileRepository;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class ProfileService {
     private Profile profile, existing;
     private final ProfileRepository profileRepository;
     private final UserService userService;
+
+    public ProfileService(ProfileRepository profileRepository, UserService userService) {
+        this.profileRepository = profileRepository;
+        this.userService = userService;
+    }
 
     @Value("${app.upload-dir}")
     private String uploadDir;

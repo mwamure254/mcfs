@@ -140,15 +140,11 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <form th:action="@{/records/documents/toggle/{id}(id=${document.id})}"
-                                                method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-sm btn-outline-warning"
-                                                    th:title="${document.active ? 'Deactivate' : 'Activate'}">
-                                                    <i
-                                                        th:class="${document.active ? 'fas fa-toggle-on' : 'fas fa-toggle-off'}"></i>
-                                                    Active
-                                                </button>
-                                            </form>
+                                            <input type="checkbox" th:field="*{active}"
+                                                th:checked="${document.active ? true : false}">
+
+                                            Active
+                                            </input>
                                         </div>
                                     </div>
 
@@ -321,7 +317,7 @@
                             <div class="form-group col-md-6">
                                 <label for="role">
                                     <i class="fas fa-user-tag text-primary mr-1"></i>
-                                    Assign To
+                                    Assign to user or department for action
                                 </label>
                                 <select class="form-control" id="role" name="recipient" required>
                                     <option value="" selected disabled>

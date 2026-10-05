@@ -124,7 +124,7 @@
                                             </div>
 
                                             <div class="h5 mb-0 font-weight-bold text-gray-800"
-                                            th:text="${progress.size() ?: 0}">
+                                                th:text="${progress.size() ?: 0}">
                                                 0
                                             </div>
                                         </div>
@@ -224,8 +224,7 @@
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-right shadow">
                                         <h6 class="dropdown-header">Filter Records</h6>
-                                        <a class="dropdown-item"
-                                            th:href="@{/records/tasks(filter='today')}">Today</a>
+                                        <a class="dropdown-item" th:href="@{/records/tasks(filter='today')}">Today</a>
                                         <a class="dropdown-item" th:href="@{/records/tasks(filter='month')}">This
                                             Month</a>
                                         <a class="dropdown-item" th:href="@{/records/tasks(filter='year')}">This
@@ -301,56 +300,193 @@
                                                 </span>
                                             </td>
 
-                                            <td class="text-center">
+                                            <td>
 
-                                                <div class="dropdown">
-
-                                                    <button class="btn btn-sm btn-light" type="button"
-                                                        data-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v"></i>
+                                                <div class="btn-group" role="group" aria-label="Role actions">
+                                                    <!-- ACTION -->
+                                                    <button type="button" class="btn btn-sm btn-outline-warning"
+                                                        data-toggle="modal" th:data-target="'#taskModal' + ${task.id}"
+                                                        title="Delete role">
+                                                        <i class="fas fa-edit"></i>
                                                     </button>
 
-                                                    <div class="dropdown-menu dropdown-menu-right shadow">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-light" type="button"
+                                                            data-toggle="dropdown" aria-haspopup="true"
+                                                            aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu dropdown-menu-right shadow">
 
-                                                        <h6 class="dropdown-header">
-                                                            Task actions
-                                                        </h6>
+                                                            <h6 class="dropdown-header">
+                                                                Task actions
+                                                            </h6>
 
-                                                        <a class="dropdown-item"
-                                                            th:href="@{/documents/tasks/view/{id}(id=${task.id})}">
-                                                            <i class="fas fa-eye fa-fw mr-2 text-primary"></i>
-                                                            View
-                                                        </a>
+                                                            <a class="dropdown-item"
+                                                                th:href="@{/documents/tasks/view/{id}(id=${task.id})}">
+                                                                <i class="fas fa-eye fa-fw mr-2 text-primary"></i>
+                                                                View
+                                                            </a>
 
-                                                        <a class="dropdown-item"
-                                                            th:href="@{/documents/tasks/edit/{id}(id=${task.id})}">
-                                                            <i class="fas fa-edit fa-fw mr-2 text-info"></i>
-                                                            Edit
-                                                        </a>
+                                                            <a class="dropdown-item"
+                                                                th:href="@{/documents/tasks/edit/{id}(id=${task.id})}">
+                                                                <i class="fas fa-edit fa-fw mr-2 text-info"></i>
+                                                                Edit
+                                                            </a>
 
-                                                        <a class="dropdown-item"
-                                                            th:href="@{/documents/tasks/assign/{id}(id=${task.id})}">
-                                                            <i class="fas fa-user-plus fa-fw mr-2 text-success"></i>
-                                                            Attend
-                                                        </a>
+                                                            <a class="dropdown-item"
+                                                                th:href="@{/documents/tasks/assign/{id}(id=${task.id})}">
+                                                                <i class="fas fa-user-plus fa-fw mr-2 text-success"></i>
+                                                                Attend
+                                                            </a>
+                                                        </div>
                                                     </div>
-
                                                 </div>
-
                                             </td>
 
+                                            <!-- ================= TASK MODAL ================= -->
+                                            <div class="modal fade" th:id="'taskModal' + ${task.id}" tabindex="-1"
+                                                role="dialog" aria-hidden="true">
+
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                    <div class="modal-content">
+
+                                                        <form th:action="@{/task/update/{id}(id=${task.id})}" method="post">
+
+                                                            <!-- Modal Header -->
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">
+                                                                    <i class="fas fa-tasks mr-2"></i>
+                                                                    Take Action on Task
+                                                                </h5>
+
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+
+                                                            <!-- Modal Body -->
+                                                            <div class="modal-body">
+                                                                <!-- Task name -->
+                                                                <div class="form-group">
+                                                                    <label for="taskName">
+                                                                        <i class="fas fa-tasks text-primary mr-1"></i>
+                                                                        Name of task
+                                                                    </label>
+
+                                                                    <input type="text" class="form-control"
+                                                                        id="taskName" name="name"
+                                                                        placeholder="Enter task name" required>
+                                                                </div>
+
+                                                                <!-- Recipient -->
+                                                                <div class="form-group">
+                                                                    <label for="recipient">
+                                                                        <i
+                                                                            class="fas fa-user-tag text-primary mr-1"></i>
+                                                                        Assign to User / Department
+                                                                    </label>
+
+                                                                    <div class="input-group">
+                                                                        <div class="input-group-prepend">
+                                                                            <span class="input-group-text">
+                                                                                <i class="fas fa-users"></i>
+                                                                            </span>
+                                                                        </div>
+
+                                                                        <select class="form-control" id="recipient"
+                                                                            name="recipient" required>
+
+                                                                            <option value="" disabled
+                                                                                th:selected="${task.recipient == null}">
+                                                                                SELECT
+                                                                            </option>
+
+                                                                            <option th:each="role : ${roles}"
+                                                                                th:value="${role.id}"
+                                                                                th:text="${role.name}"
+                                                                                th:selected="${task.recipient == role.name}">
+                                                                            </option>
+
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Action / Status -->
+                                                                <div class="form-group">
+                                                                    <label for="dosa">
+                                                                        <i class="fas fa-tasks text-primary mr-1"></i>
+                                                                        Document task status
+                                                                    </label>
+
+                                                                    <select class="form-control" id="dosa" name="dosa"
+                                                                        required>
+
+                                                                        <option value="" disabled
+                                                                            th:selected="${task.dosa == null}">
+                                                                            SELECT
+                                                                        </option>
+
+                                                                        <option th:each="dosa : ${statuses}"
+                                                                            th:value="${dosa.name}"
+                                                                            th:selected="${task.dosa == dosa.name}"
+                                                                            th:text="${dosa.name}">
+                                                                            Progress
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <!-- Comment / Description -->
+                                                                <div class="form-group mb-0">
+                                                                    <label for="description">
+                                                                        <i
+                                                                            class="fas fa-comment-alt text-primary mr-1"></i>
+                                                                        Comment / Instructions
+                                                                    </label>
+
+                                                                    <textarea name="description" id="description"
+                                                                        class="form-control"
+                                                                        placeholder="Enter comments or instructions..."
+                                                                        rows="4" maxlength="200"></textarea>
+
+                                                                    <small class="form-text text-muted">
+                                                                        Maximum 200 characters.
+                                                                    </small>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <!-- Modal Footer -->
+                                                            <div class="modal-footer">
+                                                                <button type="reset" class="btn btn-outline-light">
+                                                                    <i class="fas fa-eraser mr-1"></i>
+                                                                    Clear
+                                                                </button>
+
+                                                                <button type="button" class="btn btn-outline-secondary"
+                                                                    data-dismiss="modal">
+                                                                    <i class="fas fa-times mr-1"></i>
+                                                                    Cancel
+                                                                </button>
+
+                                                                <button type="submit" class="btn btn-outline-primary">
+                                                                    <i class="fas fa-save mr-1"></i>
+                                                                    Update Task
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- ============== END TASK MODAL ============== -->
                                         </tr>
 
                                         <!-- Empty State -->
                                         <tr th:if="${tasks == null || #lists.isEmpty(tasks)}">
-
                                             <td colspan="8" class="text-center py-5">
-
                                                 <div class="text-muted">
-
                                                     <i class="fas fa-tasks fa-3x mb-3"></i>
-
                                                     <h6 class="font-weight-bold">
                                                         No document tasks found
                                                     </h6>
@@ -363,17 +499,11 @@
                                                         <i class="fas fa-plus mr-1"></i>
                                                         Create task
                                                     </a>
-
                                                 </div>
-
                                             </td>
-
                                         </tr>
-
                                     </tbody>
-
                                 </table>
-
                             </div>
 
                             <!-- Pagination -->

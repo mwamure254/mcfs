@@ -1,24 +1,10 @@
 package com.mfano.mcfs.records;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.Element;
-
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
-
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mcfs.auth.services.AuditService;
@@ -47,14 +32,10 @@ import com.mfano.mcfs.utils.documents.services.DocumentStatusService;
 import com.mfano.mcfs.utils.documents.services.DocumentTypeService;
 import com.mfano.mcfs.utils.documents.services.DocumentService;
 import com.mfano.mcfs.utils.documents.models.Documents;
-import com.mfano.mcfs.utils.documents.models.DocumentClass;
-
-import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/records")
 @PreAuthorize("hasAuthority('RMO')")
-@RequiredArgsConstructor
 public class RecordsController {
     private final ProfileService profileService;
     private final AuditService auditService;
@@ -67,6 +48,21 @@ public class RecordsController {
     private final DocumentTypeService typeService;
     private final DocumentClassService classService;
     private final DocumentStatusService statusService;
+
+    public RecordsController(ProfileService profileService, AuditService auditService, RoleService roleService,
+            BranchService storeService, UserService userService, DocumentService documentService,
+            DocumentTypeService typeService, DocumentClassService classService,
+            DocumentStatusService statusService) {
+        this.profileService = profileService;
+        this.auditService = auditService;
+        this.roleService = roleService;
+        this.storeService = storeService;
+        this.userService = userService;
+        this.documentService = documentService;
+        this.typeService = typeService;
+        this.classService = classService;
+        this.statusService = statusService;
+  }
 
     // manage /GET/* module
     @GetMapping("/{option}")
