@@ -20,11 +20,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mcfs.config.CustomUserDetails;
 import com.mfano.mcfs.dtos.UserDto;
-import com.mfano.mcfs.utils.documents.models.DocumentTask;
-import com.mfano.mcfs.utils.documents.services.DocumentClassService;
-import com.mfano.mcfs.utils.documents.services.DocumentStatusService;
-import com.mfano.mcfs.utils.documents.services.DocumentTaskService;
-import com.mfano.mcfs.utils.documents.services.DocumentTypeService;
+import com.mfano.mcfs.records.models.DocumentTask;
+import com.mfano.mcfs.records.services.DocumentClassService;
+import com.mfano.mcfs.records.services.DocumentStatusService;
+import com.mfano.mcfs.records.services.DocumentTaskService;
+import com.mfano.mcfs.records.services.DocumentTypeService;
 import com.mfano.mcfs.auth.models.User;
 import com.mfano.mcfs.auth.models.Profile;
 import com.mfano.mcfs.auth.services.AuditService;
@@ -43,7 +43,7 @@ public class AuthController {
     private final DocumentStatusService statusService;
     private final PasswordEncoder passwordEncoder;
     private String msg = "security/message";
-    private static final String login = "redirect:/login?error";
+    private static final String login = "redirect:/login";
     private final AuditService auditService;
 
     public AuthController(UserService userService, ProfileService profileService, AuditService auditService,

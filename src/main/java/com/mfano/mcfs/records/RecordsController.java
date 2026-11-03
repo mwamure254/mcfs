@@ -27,11 +27,11 @@ import com.mfano.mcfs.auth.services.RoleService;
 import com.mfano.mcfs.auth.services.UserService;
 import com.mfano.mcfs.config.CustomUserDetails;
 import com.mfano.mcfs.dtos.UserDto;
-import com.mfano.mcfs.utils.documents.services.DocumentClassService;
-import com.mfano.mcfs.utils.documents.services.DocumentStatusService;
-import com.mfano.mcfs.utils.documents.services.DocumentTypeService;
-import com.mfano.mcfs.utils.documents.services.DocumentService;
-import com.mfano.mcfs.utils.documents.models.Documents;
+import com.mfano.mcfs.records.models.Documents;
+import com.mfano.mcfs.records.services.DocumentClassService;
+import com.mfano.mcfs.records.services.DocumentService;
+import com.mfano.mcfs.records.services.DocumentStatusService;
+import com.mfano.mcfs.records.services.DocumentTypeService;
 
 @Controller
 @RequestMapping("/records")

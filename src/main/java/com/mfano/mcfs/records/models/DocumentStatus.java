@@ -1,4 +1,4 @@
-package com.mfano.mcfs.utils.documents.models;
+package com.mfano.mcfs.records.models;
 import com.mfano.mcfs.auth.models.CommonObject;
 
 import jakarta.persistence.Entity;

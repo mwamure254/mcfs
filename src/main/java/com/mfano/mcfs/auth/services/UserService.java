@@ -37,7 +37,8 @@ public class UserService {
     @Value("${app.base-url}")
     private String appBaseUrl;
 
-    public UserService (UserRepository userRepository, PasswordEncoder passwordEncoder, BranchService branchService, RoleService roleService, TokenRepositories tokenRepository, MailService emailService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, BranchService branchService,
+            RoleService roleService, TokenRepositories tokenRepository, MailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.branchService = branchService;
@@ -63,8 +64,8 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setFin(userDto.getFin());
-        user.setLan(userDto.getLan());             
-        user.setGender(userDto.getGender());  
+        user.setLan(userDto.getLan());
+        user.setGender(userDto.getGender());
 
         user.setBranch(branchService.findById(userDto.getBranch()));
         // Role
@@ -74,19 +75,19 @@ public class UserService {
         user.setRoles(roles);
 
         save(user);
-        //createAndSendToken(user);
+        // createAndSendToken(user);
     }
 
     public User save(User user) {
         return userRepository.save(user);
     }
 
-    public void update(Long id, UserDto userDto){
+    public void update(Long id, UserDto userDto) {
         User existing = findById(id);
 
         existing.setFin(userDto.getFin());
-        existing.setLan(userDto.getLan());                     
-        existing.setGender(userDto.getGender());  
+        existing.setLan(userDto.getLan());
+        existing.setGender(userDto.getGender());
 
         existing.setPassword(passwordEncoder.encode(userDto.getPassword()));
         existing.setBranch(branchService.findById(userDto.getBranch()));
@@ -194,19 +195,20 @@ public class UserService {
     public List<User> findAll() {
         return userRepository.findAll();
     }
-    
-    //To Do
+
+    // To Do
     public void assignRoleToUser(Long userId, Long roleId) {
         User user = findById(userId);
         Role role = roleService.findById(roleId);
         user.getRoles().add(role);
         save(user);
     }
-    //To Do
-     public void removeRoleFromUser(Long userId, Long roleId) {
+
+    // To Do
+    public void removeRoleFromUser(Long userId, Long roleId) {
         User user = findById(userId);
         Role role = roleService.findById(roleId);
-        user.getRoles().removeIf(r->r.getId().equals(role.getId()));
+        user.getRoles().removeIf(r -> r.getId().equals(role.getId()));
         save(user);
     }
 }

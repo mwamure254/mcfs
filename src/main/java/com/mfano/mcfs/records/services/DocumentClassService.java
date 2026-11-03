@@ -1,11 +1,11 @@
-package com.mfano.mcfs.utils.documents.services;
+package com.mfano.mcfs.records.services;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.mfano.mcfs.utils.documents.models.DocumentClass;
-import com.mfano.mcfs.utils.documents.repositories.DocumentClassRepository;
+import com.mfano.mcfs.records.models.DocumentClass;
+import com.mfano.mcfs.records.repositories.DocumentClassRepository;
 
 @Service
 public class DocumentClassService {

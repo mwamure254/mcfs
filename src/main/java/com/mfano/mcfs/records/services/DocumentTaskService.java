@@ -1,4 +1,4 @@
-package com.mfano.mcfs.utils.documents.services;
+package com.mfano.mcfs.records.services;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.mfano.mcfs.auth.models.Role;
 import com.mfano.mcfs.config.CustomUserDetails;
-import com.mfano.mcfs.utils.documents.models.DocumentTask;
-import com.mfano.mcfs.utils.documents.models.Documents;
-import com.mfano.mcfs.utils.documents.repositories.DocumentTaskRepository;
+import com.mfano.mcfs.records.models.DocumentTask;
+import com.mfano.mcfs.records.models.Documents;
+import com.mfano.mcfs.records.repositories.DocumentTaskRepository;
 
 @Service
 public class DocumentTaskService {

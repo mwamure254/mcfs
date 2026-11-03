@@ -15,13 +15,12 @@ import com.mfano.mcfs.auth.models.User;
 import com.mfano.mcfs.auth.repositories.BranchRepository;
 import com.mfano.mcfs.auth.repositories.RoleRepository;
 import com.mfano.mcfs.auth.repositories.UserRepository;
-
-import com.mfano.mcfs.utils.documents.models.DocumentClass;
-import com.mfano.mcfs.utils.documents.models.DocumentStatus;
-import com.mfano.mcfs.utils.documents.models.DocumentType;
-import com.mfano.mcfs.utils.documents.repositories.DocumentClassRepository;
-import com.mfano.mcfs.utils.documents.repositories.DocumentStatusRepository;
-import com.mfano.mcfs.utils.documents.repositories.DocumentTypeRepository;
+import com.mfano.mcfs.records.models.DocumentClass;
+import com.mfano.mcfs.records.models.DocumentStatus;
+import com.mfano.mcfs.records.models.DocumentType;
+import com.mfano.mcfs.records.repositories.DocumentClassRepository;
+import com.mfano.mcfs.records.repositories.DocumentStatusRepository;
+import com.mfano.mcfs.records.repositories.DocumentTypeRepository;
 
 import jakarta.transaction.Transactional;
 

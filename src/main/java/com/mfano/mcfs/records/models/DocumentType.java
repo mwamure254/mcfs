@@ -1,4 +1,4 @@
-package com.mfano.mcfs.utils.documents.models;
+package com.mfano.mcfs.records.models;
 import com.mfano.mcfs.auth.models.CommonObject;
 
 import jakarta.persistence.Entity;
@@ -7,9 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "docas")
+@Table(name = "dotes")
 @Setter
 @Getter
-public class DocumentClass extends CommonObject {
+public class DocumentType extends CommonObject {
 
 }

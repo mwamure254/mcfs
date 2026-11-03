@@ -1,6 +1,9 @@
 package com.mfano.mcfs.auth.controllers;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +20,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.mfano.mcfs.config.CustomUserDetails;
 import com.mfano.mcfs.dtos.UserDto;
+import com.mfano.mcfs.records.models.DocumentClass;
+import com.mfano.mcfs.records.models.DocumentStatus;
+import com.mfano.mcfs.records.models.DocumentType;
+import com.mfano.mcfs.records.services.DocumentClassService;
+import com.mfano.mcfs.records.services.DocumentService;
+import com.mfano.mcfs.records.services.DocumentStatusService;
+import com.mfano.mcfs.records.services.DocumentTaskService;
+import com.mfano.mcfs.records.services.DocumentTypeService;
+import com.mfano.mcfs.utils.documents.DocumentCountService;
 import com.mfano.mcfs.auth.models.Role;
 import com.mfano.mcfs.auth.models.Profile;
 import com.mfano.mcfs.auth.models.User;
@@ -25,13 +37,6 @@ import com.mfano.mcfs.auth.services.AuditService;
 import com.mfano.mcfs.auth.services.RoleService;
 import com.mfano.mcfs.auth.services.UserService;
 import com.mfano.mcfs.auth.services.ProfileService;
-
-import com.mfano.mcfs.utils.documents.services.DocumentTypeService;
-import com.mfano.mcfs.utils.documents.services.DocumentClassService;
-import com.mfano.mcfs.utils.documents.services.DocumentStatusService;
-import com.mfano.mcfs.utils.documents.models.DocumentType;
-import com.mfano.mcfs.utils.documents.models.DocumentClass;
-import com.mfano.mcfs.utils.documents.models.DocumentStatus;
 
 import jakarta.validation.Valid;
 
@@ -71,6 +76,20 @@ public class AdminController {
         String dir = "redirect";
         switch (option) {
             case "dashboard":
+                List<Role> roles = roleService.findAll();
+                List<User> users = userService.findAll();
+                Map<Role, List<User>> usersByRole = new LinkedHashMap<>();
+
+                for (Role role : roles) {
+                    List<User> roleUsers = users.stream()
+                            .filter(user -> user.getRoles().stream()
+                                    .anyMatch(userRole -> userRole.getId().equals(role.getId())))
+                            .toList();
+
+                    usersByRole.put(role, roleUsers);
+                }
+
+                red.addAttribute("usersByRole", usersByRole);
                 red.addAttribute("users", userService.findAll());
                 red.addAttribute("stores", storeService.findAll());
                 red.addAttribute("roles", roleService.findAll());

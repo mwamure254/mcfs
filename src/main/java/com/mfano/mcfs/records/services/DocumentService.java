@@ -1,4 +1,4 @@
-package com.mfano.mcfs.utils.documents.services;
+package com.mfano.mcfs.records.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,9 +37,10 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.mfano.mcfs.auth.services.AuditService;
 import com.mfano.mcfs.config.CustomUserDetails;
+import com.mfano.mcfs.records.models.DocumentType;
+import com.mfano.mcfs.records.models.Documents;
+import com.mfano.mcfs.records.repositories.DocumentRepository;
 import com.mfano.mcfs.utils.documents.DocumentHeaderFooter;
-import com.mfano.mcfs.utils.documents.models.Documents;
-import com.mfano.mcfs.utils.documents.repositories.DocumentRepository;
 
 
 @Service
@@ -73,6 +74,14 @@ public class DocumentService {
     // Get All documents
     public List<Documents> findAll() {
         return documentRepository.findAll();
+    }
+
+    public long countByType(DocumentType dote) {
+        return documentRepository.countByDote(dote);
+    }
+
+    public long count() {
+        return documentRepository.count();
     }
 
     // filter today's
@@ -572,15 +581,10 @@ public class DocumentService {
     }
 
     private String formatFilter(String filter) {
-
         return switch (filter.toLowerCase()) {
-
             case "today" -> "Today";
-
             case "month" -> "This Month";
-
             case "year" -> "This Year";
-
             default -> "All Entries";
         };
     }
